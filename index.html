@@ -164,6 +164,16 @@
                                     class="hidden mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
                                     Simpan Jawaban
                                 </button>
+
+                                <!-- KARTU SKOR (BARU) - Ditampilkan setelah kuis disimpan -->
+                                <div id="worksheet-score-card"
+                                    class="hidden text-center p-8 bg-green-50 rounded-lg border border-green-200 mt-6">
+                                    <i data-lucide="check-circle"
+                                        class="h-16 w-16 text-green-500 mx-auto mb-4"></i>
+                                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Kuis Telah Disimpan!</h3>
+                                    <p class="text-lg text-gray-600 mb-4">Skor Anda:</p>
+                                    <p id="score-card-text" class="text-6xl font-bold text-green-600">0</p>
+                                </div>
                             </div>
 
                             <!-- Tab: Edit Worksheet (Dosen) - DIPERBARUI -->
@@ -788,10 +798,10 @@
             const ebookLinkContainer = document.getElementById('ebook-link-container');
             const ebookLinkBtn = document.getElementById('ebook-link-btn');
 
-            // Kosongkan kontainer
-            worksheetFormContainer.innerHTML = ''; 
+            worksheetFormContainer.innerHTML = '';
             worksheetReadingContent.innerHTML = '';
             ebookLinkContainer.classList.add('hidden');
+            document.getElementById('worksheet-score-card').classList.add('hidden'); // Sembunyikan score card
             
             worksheetLoading.classList.remove('hidden');
             worksheetEmpty.classList.add('hidden');
@@ -857,7 +867,29 @@
                 return; // Berhenti
             }
 
-            // Jika ADA KUIS
+            // --- CEK JIKA SUDAH MENGERJAKAN (Khusus Mahasiswa) ---
+            if (userSubmission && userRole === 'mahasiswa') {
+                worksheetLoading.classList.add('hidden');
+                worksheetEmpty.classList.add('hidden');
+                
+                // Tampilkan materi bacaan (jika ada)
+                if (hasReadingContent) {
+                    worksheetReadingContent.classList.remove('hidden'); 
+                }
+                
+                // Tampilkan Score Card
+                const scoreCard = document.getElementById('worksheet-score-card');
+                document.getElementById('score-card-text').textContent = userSubmission.score;
+                scoreCard.classList.remove('hidden');
+                
+                // Pastikan form & submit button tersembunyi
+                worksheetFormContainer.classList.add('hidden');
+                submitWorksheetBtn.classList.add('hidden');
+                return; // Selesai, jangan render form
+            }
+
+            // --- JIKA BELUM MENGERJAKAN (ATAU DOSEN) ---
+            // (Logika rendering form yang ada saat ini)
             worksheetFormContainer.classList.remove('hidden');
 
             // Tambahkan materi bacaan (HTML atau JSON lama) ke form container
@@ -1094,6 +1126,16 @@
                 const submissionId = getSubmissionId(currentEditingMaterialId);
                 const docRef = doc(db, submissionsColPath, submissionId);
                 await setDoc(docRef, submissionData, { merge: true });
+
+                // --- PERUBAHAN: Langsung tampilkan skor ---
+                worksheetFormContainer.classList.add('hidden');
+                submitWorksheetBtn.classList.add('hidden');
+                
+                const scoreCard = document.getElementById('worksheet-score-card');
+                document.getElementById('score-card-text').textContent = finalGrade;
+                scoreCard.classList.remove('hidden');
+                // --- Akhir Perubahan ---
+
                 showMessage(`Jawaban berhasil disimpan! Skor Anda: ${finalGrade}`, "success");
             } catch (error) {
                 console.error("Error submitting worksheet:", error);
@@ -1205,6 +1247,7 @@
 </body>
 
 </html>
+
 
 
 
