@@ -147,6 +147,11 @@
                                 class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
                                 Lembar Kerja
                             </button>
+                            <!-- Tab Mahasiswa (BARU) -->
+                            <button data-tab="student-recap"
+                                class="tab-button tab-button-mahasiswa hidden whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Rekap Nilai Saya
+                            </button>
                             <!-- Tab Dosen -->
                             <button data-tab="edit"
                                 class="tab-button tab-button-dosen hidden whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
@@ -257,7 +262,7 @@
                             <button id="save-worksheet-btn"
                                 class="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition">
                                 Simpan Perubahan
-                            </button>
+                                </button>
                         </div>
 
                         <!-- Konten Tab: Rekap Nilai (Dosen) -->
@@ -285,6 +290,33 @@
                                     </tr>
                                 </thead>
                                 <tbody id="recap-table-body" class="divide-y divide-gray-200">
+                                    <!-- Data rekap akan di-render oleh JS di sini -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Konten Tab: Rekap Nilai Mahasiswa (BARU) -->
+                        <div id="student-recap-content" class="hidden">
+                            <h3 class="text-xl font-semibold mb-4 text-gray-800">Rekap Nilai Anda</h3>
+                            <div id="student-recap-loading" class="hidden text-gray-500">Memuat rekap...</div>
+                            <div id="student-recap-no-data" class="hidden text-gray-500">Anda belum mengerjakan kuis
+                                apapun.</div>
+                            <table id="student-recap-table"
+                                class="hidden min-w-full bg-white rounded-lg shadow overflow-hidden">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Materi</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Skor</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Waktu Mengerjakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="student-recap-table-body" class="divide-y divide-gray-200">
                                     <!-- Data rekap akan di-render oleh JS di sini -->
                                 </tbody>
                             </table>
@@ -367,10 +399,12 @@
         const materialTabs = document.getElementById('material-tabs');
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabButtonsDosen = document.querySelectorAll('.tab-button-dosen');
+        const tabButtonsMahasiswa = document.querySelectorAll('.tab-button-mahasiswa'); // BARU
         // Kontainer Tab
         const worksheetContent = document.getElementById('worksheet-content');
         const editContent = document.getElementById('edit-content');
         const recapContent = document.getElementById('recap-content');
+        const studentRecapContent = document.getElementById('student-recap-content'); // BARU
         // Detail Lembar Kerja
         const worksheetDetails = document.getElementById('worksheet-details');
         const worksheetLoading = document.getElementById('worksheet-loading');
@@ -393,6 +427,11 @@
         const recapNoData = document.getElementById('recap-no-data');
         const recapTable = document.getElementById('recap-table');
         const recapTableBody = document.getElementById('recap-table-body');
+        // Detail Rekap Mahasiswa (BARU)
+        const studentRecapLoading = document.getElementById('student-recap-loading');
+        const studentRecapNoData = document.getElementById('student-recap-no-data');
+        const studentRecapTable = document.getElementById('student-recap-table');
+        const studentRecapTableBody = document.getElementById('student-recap-table-body');
         // Notifikasi
         const toast = document.getElementById('toast-notification');
         const toastMessage = document.getElementById('toast-message');
@@ -531,6 +570,13 @@
             if (email.includes('mahasiswa.a')) return 'Mahasiswa A';
             if (email.includes('mahasiswa.b')) return 'Mahasiswa B';
             if (email.includes('mahasiswa.c')) return 'Mahasiswa C';
+
+            // --- TAMBAHAN BARU ---
+            if (email.includes('240508007@elearning.com')) return 'YOPIG MERZI PRASTIKO';
+            if (email.includes('240508003@elearning.com')) return 'M. FAJAR RAHINO';
+            if (email.includes('240508005@elearning.com')) return 'Moses Angga Tambunan';
+            // --- AKHIR TAMBAHAN ---
+
             // Default jika polanya tidak cocok
             return email.split('@')[0];
         }
@@ -573,9 +619,11 @@
             if (role === 'dosen') {
                 addMaterialContainer.classList.remove('hidden');
                 tabButtonsDosen.forEach(btn => btn.classList.remove('hidden'));
+                tabButtonsMahasiswa.forEach(btn => btn.classList.add('hidden')); // Sembunyikan tab mhs
             } else {
                 addMaterialContainer.classList.add('hidden');
                 tabButtonsDosen.forEach(btn => btn.classList.add('hidden'));
+                tabButtonsMahasiswa.forEach(btn => btn.classList.remove('hidden')); // Tampilkan tab mhs
             }
 
             // 2. Listener untuk Data Pengguna (Nama Mahasiswa)
@@ -624,14 +672,14 @@
                 console.log("Submissions cache updated:", submissionsCache);
 
                 // Jika ada materi yang sedang dipilih, render ulang
-                if (currentEditingMaterialId) {
-                    // Cek tab mana yang aktif
-                    const activeTab = document.querySelector('.tab-button[data-selected="true"]')?.dataset.tab || 'worksheet';
-                    if (activeTab === 'worksheet') {
-                        renderWorksheet(currentEditingMaterialId);
-                    } else if (activeTab === 'recap') {
-                        renderRecapTab(currentEditingMaterialId);
-                    }
+                const activeTab = document.querySelector('.tab-button[data-selected="true"]')?.dataset.tab || 'worksheet';
+
+                if (activeTab === 'worksheet' && currentEditingMaterialId) {
+                    renderWorksheet(currentEditingMaterialId);
+                } else if (activeTab === 'recap' && currentEditingMaterialId) {
+                    renderRecapTab(currentEditingMaterialId);
+                } else if (activeTab === 'student-recap') { // Selalu render jika ini aktif
+                    renderStudentRecapTab();
                 }
             }, (error) => console.error("Error listening to submissions:", error));
 
@@ -789,6 +837,7 @@
             worksheetDetails.classList.add('hidden');
             editContent.classList.add('hidden');
             recapContent.classList.add('hidden');
+            studentRecapContent.classList.add('hidden'); // BARU
             worksheetLoading.classList.add('hidden');
             worksheetEmpty.classList.add('hidden');
 
@@ -805,6 +854,10 @@
                 worksheetContent.classList.remove('hidden');
                 recapContent.classList.remove('hidden');
                 renderRecapTab(currentEditingMaterialId); // Render konten
+            } else if (tabName === 'student-recap' && userRole === 'mahasiswa') { // BARU
+                worksheetContent.classList.remove('hidden');
+                studentRecapContent.classList.remove('hidden');
+                renderStudentRecapTab(); // Panggil fungsi baru
             } else {
                 // Fallback jika mahasiswa mencoba akses tab dosen
                 worksheetContent.classList.remove('hidden');
@@ -1132,6 +1185,53 @@
             // 4. Tampilkan tabel
             recapLoading.classList.add('hidden');
             recapTable.classList.remove('hidden');
+        }
+
+        /**
+         * Merender konten untuk tab "Rekap Nilai Saya" (Mahasiswa). (BARU)
+         */
+        function renderStudentRecapTab() {
+            console.log("Rendering student recap tab for:", currentUserId);
+            studentRecapTableBody.innerHTML = '';
+
+            studentRecapLoading.classList.remove('hidden');
+            studentRecapTable.classList.add('hidden');
+            studentRecapNoData.classList.add('hidden');
+
+            // Ambil semua submission dari cache (sudah terfilter by user)
+            const mySubmissions = Array.from(submissionsCache.values());
+
+            if (mySubmissions.length === 0) {
+                studentRecapLoading.classList.add('hidden');
+                studentRecapNoData.classList.remove('hidden');
+                return;
+            }
+
+            // Urutkan berdasarkan 'order' materi
+            mySubmissions.sort((a, b) => {
+                const matA = materialsCache.get(a.materialId);
+                const matB = materialsCache.get(b.materialId);
+                const orderA = matA?.order ?? 99;
+                const orderB = matB?.order ?? 99;
+                return orderA - orderB;
+            });
+
+            mySubmissions.forEach(sub => {
+                const material = materialsCache.get(sub.materialId);
+                const title = material ? material.title : 'Materi Dihapus';
+                const timestamp = sub.submittedAt ? new Date(sub.submittedAt.seconds * 1000).toLocaleString('id-ID') : 'N/A';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${title}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-600">${sub.score}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
+                `;
+                studentRecapTableBody.appendChild(row);
+            });
+
+            studentRecapLoading.classList.add('hidden');
+            studentRecapTable.classList.remove('hidden');
         }
 
         /**
