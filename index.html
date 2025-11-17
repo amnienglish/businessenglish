@@ -5,290 +5,313 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business English LMS</title>
-    <!-- Muat Tailwind CSS -->
+    <!-- Muat Tailwind CSS dengan plugin typography -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-    <!-- Muat Ikon Lucide (FIX: Tambahkan 'defer') -->
+    <!-- Muat Ikon Lucide (FIX: Tambahkan 'defer' agar tidak block) -->
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
     <!-- Muat TinyMCE (Rich Text Editor) (FIX: Tambahkan 'defer') -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"
+        referrerpolicy="origin"></script>
+
     <style>
         /* Style kustom untuk LMS */
         body {
             font-family: 'Inter', sans-serif;
         }
 
-        /* Styling untuk h3, p, ul, table, dll. di dalam 
-           #worksheet-reading-content sekarang ditangani 
-           secara otomatis oleh class 'prose' dari plugin 
-           typography Tailwind. Style manual dihapus.
-        */
+        /* Sembunyikan scrollbar untuk sidebar, tapi tetap bisa di-scroll */
+        #material-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        #material-list {
+            -ms-overflow-style: none;
+            /* IE dan Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 antialiased">
 
-    <!-- 1. Halaman Login -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gray-900 px-4">
-        <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl">
-            <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">LMS Login</h2>
-            <p class="text-center text-gray-500 mb-6">Business English</p>
-            <form id="login-form" class="space-y-6">
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="email" name="email" required
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="mahasiswa.a@gmail.com">
+    <!-- Kontainer Aplikasi Utama -->
+    <div id="app-container" class="h-screen w-screen flex">
+
+        <!-- 1. Halaman Login (Awalnya terlihat) -->
+        <div id="login-screen" class="w-full h-full flex items-center justify-center bg-gray-50">
+            <div class="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-200">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Business English LMS</h2>
+                <p class="text-center text-gray-500 mb-8">Silakan login untuk melanjutkan</p>
+
+                <div id="login-error" class="hidden text-red-600 bg-red-50 p-3 rounded-lg text-sm mb-4"></div>
+
+                <form id="login-form">
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="cth: dosen123@gmail.com" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="password"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" id="login-button"
+                        class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                        Login
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. Halaman Dashboard (Awalnya tersembunyi) -->
+        <div id="dashboard-screen" class="hidden w-full h-full flex">
+            <!-- Sidebar (Daftar Materi) -->
+            <div class="w-1/4 max-w-xs h-full bg-white border-r border-gray-200 flex flex-col shadow-sm">
+                <!-- Header Sidebar -->
+                <div class="p-4 border-b border-gray-200">
+                    <h1 class="text-xl font-bold text-gray-800">Materi Kuliah</h1>
+                    <p id="user-role-display" class="text-sm text-gray-500">Role: <span
+                            class="font-medium text-gray-700"></span></p>
                 </div>
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" id="password" name="password" required
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="••••••••">
+
+                <!-- Kontainer Tombol Tambah Materi (Hanya Dosen) -->
+                <div id="add-material-container" class="hidden p-4 border-b border-gray-200">
+                    <button id="add-material-btn"
+                        class="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 transition">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        Tambah Materi Baru
+                    </button>
                 </div>
-                <button type="submit"
-                    class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
-                    Login
-                </button>
-            </form>
-            <p id="login-error" class="text-red-500 text-sm mt-4 text-center"></p>
+
+                <!-- Daftar Materi (Bisa di-scroll) -->
+                <div id="material-list" class="flex-1 overflow-y-auto p-2">
+                    <!-- Materi akan di-render oleh JS di sini -->
+                    <!-- Contoh item:
+                    <button class="w-full text-left px-4 py-3 mb-1 rounded-lg hover:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-700 font-medium">
+                        Pertemuan 1: Introduction
+                    </button>
+                    -->
+                </div>
+
+                <!-- Footer Sidebar (Info User & Logout) -->
+                <div class="p-4 border-t border-gray-200 mt-auto">
+                    <div class="mb-3">
+                        <p class="text-xs text-gray-500">Login sebagai:</p>
+                        <p id="user-email-display" class="text-sm font-medium text-gray-800 truncate"
+                            title="user@example.com"></p>
+                    </div>
+                    <button id="logout-button"
+                        class="w-full flex items-center justify-center gap-2 text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg hover:bg-red-100 transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Konten Utama (Detail Materi) -->
+            <div class="w-3/4 flex-1 h-full bg-gray-50 flex flex-col">
+                <!-- Header Konten Utama -->
+                <div class="p-5 border-b border-gray-200 bg-white shadow-sm">
+                    <!-- Judul Materi dan Ikon Edit Judul (Dosen) -->
+                    <div class="flex items-center gap-2">
+                        <h2 id="material-title" class="text-2xl font-bold text-gray-800">
+                            Pilih materi dari daftar di sebelah kiri
+                        </h2>
+                        <!-- Ikon Edit Judul (Hanya Dosen) -->
+                        <button id="edit-title-btn"
+                            class="hidden text-gray-400 hover:text-blue-600 transition p-1 rounded-md">
+                            <i data-lucide="pencil" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Navigasi Tab (Lembar Kerja, Edit, Rekap) -->
+                    <div id="material-tabs" class="hidden mt-4 border-b border-gray-200">
+                        <nav class="flex -mb-px space-x-6">
+                            <button data-tab="worksheet"
+                                class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Lembar Kerja
+                            </button>
+                            <!-- Tab Dosen -->
+                            <button data-tab="edit"
+                                class="tab-button tab-button-dosen hidden whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Edit Worksheet
+                            </button>
+                            <button data-tab="recap"
+                                class="tab-button tab-button-dosen hidden whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                Rekap Nilai
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Area Konten Tab (Bisa di-scroll) -->
+                <div class="flex-1 overflow-y-auto p-6">
+                    <div id="worksheet-content" class="max-w-3xl mx-auto">
+
+                        <!-- State: Loading -->
+                        <div id="worksheet-loading" class="hidden text-center py-10">
+                            <div class="spinner w-12 h-12 rounded-full border-4 border-gray-200 border-t-blue-500 mx-auto">
+                            </div>
+                            <p class="mt-4 text-gray-500">Memuat materi...</p>
+                        </div>
+
+                        <!-- State: Belum memilih materi -->
+                        <div id="worksheet-empty" class="text-center py-20">
+                            <i data-lucide="book-open" class="w-16 h-16 text-gray-300 mx-auto"></i>
+                            <p class="mt-4 text-gray-500">Materi yang dipilih akan tampil di sini.</p>
+                        </div>
+
+                        <!-- 
+                          Konten Tab: Lembar Kerja (Mahasiswa & Dosen)
+                          FIX: `worksheet-reading-content` sekarang terpisah dan dikelola visibilitasnya oleh JS.
+                        -->
+                        <div id="worksheet-details" class="hidden">
+                            <!-- Link eBook (Jika ada) -->
+                            <div id="ebook-link-container" class="hidden mb-6">
+                                <a id="ebook-link" href="#" target="_blank"
+                                    class="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-sm">
+                                    <i data-lucide="book-marked" class="w-5 h-5"></i>
+                                    Buka Materi eBook
+                                </a>
+                            </div>
+
+                            <!-- Konten Materi Bacaan (Rich Text / HTML) -->
+                            <div id="worksheet-reading-content"
+                                class="hidden prose prose-lg max-w-none bg-white p-6 rounded-lg border border-gray-200 mb-6">
+                                <!-- Konten Rich Text (HTML) akan di-render di sini -->
+                            </div>
+
+                            <!-- Konten Form Kuis -->
+                            <div id="worksheet-form-container" class="hidden">
+                                <!-- Soal akan di-render di sini -->
+                            </div>
+                            <button id="submit-worksheet-btn"
+                                class="hidden mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                                Simpan Jawaban
+                            </button>
+
+                            <!-- KARTU SKOR (BARU) - Ditampilkan setelah kuis disimpan -->
+                            <div id="worksheet-score-card"
+                                class="hidden text-center p-8 bg-green-50 rounded-lg border border-green-200 mt-6">
+                                <i data-lucide="check-circle" class="h-16 w-16 text-green-500 mx-auto mb-4"></i>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2">Kuis Telah Disimpan!</h3>
+                                <p class="text-lg text-gray-600 mb-4">Skor Anda:</p>
+                                <p id="score-card-text" class="text-6xl font-bold text-green-600">0</p>
+                            </div>
+                        </div>
+
+
+                        <!-- Konten Tab: Edit Worksheet (Dosen) - DIPERBARUI -->
+                        <div id="edit-content" class="hidden">
+                            <!-- Input Link eBook -->
+                            <div class="mb-6">
+                                <label for="ebook-url-input" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Link eBook (Opsional)
+                                </label>
+                                <input type="url" id="ebook-url-input"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="https://drive.google.com/...">
+                                <p class="text-xs text-gray-500 mt-1">Tempel link materi (Google Drive, PDF, dll).</p>
+                            </div>
+
+                            <!-- Editor Materi Bacaan (Rich Text) -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Materi Bacaan (Rich Text Editor)
+                                </label>
+                                <textarea id="reading-content-editor" class="w-full h-64"></textarea>
+                                <p class="text-xs text-gray-500 mt-1">Tulis materi bacaan (teks, list, tabel) di sini.
+                                </p>
+                            </div>
+
+                            <!-- Editor Kuis (JSON) -->
+                            <div>
+                                <label for="worksheet-json-input"
+                                    class="block text-sm font-medium text-gray-700 mb-1">
+                                    Kuis (Format JSON)
+                                </label>
+                                <textarea id="worksheet-json-input"
+                                    class="w-full h-96 p-4 border border-gray-300 rounded-lg font-mono text-sm bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder='{ "questions": [ ... ] }'></textarea>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Tempel (paste) kode JSON untuk kuis (Pilihan Ganda / Isian).
+                                </p>
+                            </div>
+
+                            <button id="save-worksheet-btn"
+                                class="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+
+                        <!-- Konten Tab: Rekap Nilai (Dosen) -->
+                        <div id="recap-content" class="hidden">
+                            <h3 class="text-xl font-semibold mb-4 text-gray-800">Rekap Nilai: <span
+                                    id="recap-material-title"></span></h3>
+                            <div id="recap-loading" class="hidden text-gray-500">Memuat rekap...</div>
+                            <div id="recap-no-data" class="hidden text-gray-500">Belum ada mahasiswa yang mengerjakan.
+                            </div>
+                            <table id="recap-table" class="hidden min-w-full bg-white rounded-lg shadow overflow-hidden">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Nama Mahasiswa</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Email</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Skor</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Waktu Mengerjakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recap-table-body" class="divide-y divide-gray-200">
+                                    <!-- Data rekap akan di-render oleh JS di sini -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifikasi Toast -->
+        <div id="toast-notification"
+            class="hidden fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white transition-transform translate-y-16 opacity-0 duration-300">
+            <span id="toast-message"></span>
         </div>
     </div>
 
-    <!-- 2. Halaman Aplikasi Utama (Dashboard) -->
-    <div id="app-screen" class="hidden min-h-screen">
-        <!-- Header -->
-        <header class="bg-white shadow-sm sticky top-0 z-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <i data-lucide="book-open" class="h-6 w-6 text-blue-600"></i>
-                        <span class="ml-2 text-xl font-semibold text-gray-800">Business English LMS</span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <span id="user-info" class="text-sm text-gray-600"></span>
-                        <button id="logout-btn"
-                            class="text-sm font-medium text-gray-700 hover:text-blue-600 flex items-center">
-                            <i data-lucide="log-out" class="h-4 w-4 mr-1"></i>
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
 
-        <!-- Konten Utama -->
-        <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-            <div class="flex flex-col md:flex-row gap-6">
-
-                <!-- Sidebar (Daftar Materi) -->
-                <nav class="w-full md:w-1/3 lg:w-1/4 bg-white p-5 rounded-xl shadow-lg h-fit">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Daftar Materi</h3>
-                    <div id="material-list-loading" class="text-gray-500">Memuat materi...</div>
-                    <ul id="material-list" class="space-y-2">
-                        <!-- Materi akan di-render di sini oleh JS -->
-                    </ul>
-                    <button id="add-material-btn"
-                        class="hidden w-full mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center justify-center space-x-2">
-                        <i data-lucide="plus" class="h-4 w-4"></i>
-                        <span>Tambah Materi Baru</span>
-                    </button>
-                </nav>
-
-                <!-- Area Konten Detail -->
-                <div class="w-full md:w-2/3 lg:w-3/4">
-                    <!-- Pesan Selamat Datang -->
-                    <div id="welcome-message"
-                        class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center justify-center h-full">
-                        <i data-lucide="inbox" class="h-16 w-16 text-blue-300 mb-4"></i>
-                        <h2 class="text-2xl font-semibold text-gray-800 mb-2">Selamat Datang!</h2>
-                        <p class="text-gray-500 text-center">Silakan pilih materi dari daftar di sebelah kiri untuk
-                            memulai.</p>
-                    </div>
-
-                    <!-- Tampilan Detail Materi -->
-                    <div id="material-detail" class="hidden bg-white rounded-xl shadow-lg overflow-hidden">
-                        <!-- Header Detail Materi -->
-                        <div class="p-6 border-b border-gray-200">
-                            <div class="flex items-center gap-3">
-                                <h2 id="material-title" class="text-2xl font-bold text-gray-900">Judul Materi</h2>
-                                <!-- Tombol Edit Judul (khusus dosen) -->
-                                <button id="edit-title-icon-btn" class="hidden text-gray-500 hover:text-blue-600 transition">
-                                    <i data-lucide="pencil" class="h-5 w-5"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Navigasi Tab -->
-                        <div class="border-b border-gray-200">
-                            <nav class="-mb-px flex space-x-6 px-6" aria-label="Tabs">
-                                <button id="tab-worksheet" onclick="showTab('worksheet')"
-                                    class="tab-btn py-4 px-1 border-b-2 font-medium text-sm text-blue-600 border-blue-500">
-                                    Lembar Kerja
-                                </button>
-                                <button id="tab-edit" onclick="showTab('edit')"
-                                    class="tab-btn hidden py-4 px-1 border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300">
-                                    Edit Worksheet
-                                </button>
-                                <button id="tab-submissions" onclick="showTab('submissions')"
-                                    class="tab-btn hidden py-4 px-1 border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300">
-                                    Rekap Nilai
-                                </button>
-                            </nav>
-                        </div>
-
-                        <!-- Konten Tab -->
-                        <div class="p-6">
-                            <!-- Tab: Lembar Kerja (Mahasiswa & Dosen) -->
-                            <div id="worksheet-content">
-                                <div id="worksheet-loading" class="text-center text-gray-500">Memuat...</div>
-                                <div id="worksheet-empty" class="hidden text-center text-gray-500">
-                                    Dosen belum menambahkan materi atau soal untuk pertemuan ini.
-                                </div>
-                                <!-- Konten Link eBook -->
-                                <div id="ebook-link-container" class="hidden mb-6">
-                                    <a id="ebook-link-btn" href="#" target="_blank" rel="noopener noreferrer"
-                                        class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
-                                        <i data-lucide="book"></i>
-                                        Buka Materi eBook
-                                    </a>
-                                </div>
-                                <!-- Konten Materi Bacaan (dari HTML atau JSON lama) -->
-                                <div id="worksheet-reading-content" class="prose max-w-none mb-8">
-                                    <!-- Materi bacaan akan di-render di sini -->
-                                </div>
-                                <!-- Konten Form Kuis -->
-                                <div id="worksheet-form-container" class="hidden">
-                                    <!-- Soal akan di-render di sini -->
-                                </div>
-                                <button id="submit-worksheet-btn"
-                                    class="hidden mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-                                    Simpan Jawaban
-                                </button>
-
-                                <!-- KARTU SKOR (BARU) - Ditampilkan setelah kuis disimpan -->
-                                <div id="worksheet-score-card"
-                                    class="hidden text-center p-8 bg-green-50 rounded-lg border border-green-200 mt-6">
-                                    <i data-lucide="check-circle"
-                                        class="h-16 w-16 text-green-500 mx-auto mb-4"></i>
-                                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Kuis Telah Disimpan!</h3>
-                                    <p class="text-lg text-gray-600 mb-4">Skor Anda:</p>
-                                    <p id="score-card-text" class="text-6xl font-bold text-green-600">0</p>
-                                </div>
-                            </div>
-
-                            <!-- Tab: Edit Worksheet (Dosen) - DIPERBARUI -->
-                            <div id="edit-content" class="hidden">
-                                
-                                <!-- 1. Editor Materi Bacaan (Rich Text) -->
-                                <div>
-                                    <label for="reading-content-editor" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Materi Bacaan (Rich Text Editor):
-                                    </label>
-                                    <textarea id="reading-content-editor"></textarea>
-                                </div>
-
-                                <!-- 2. Link eBook -->
-                                <div class="mt-6">
-                                    <label for="ebook-url-input" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Link eBook/Materi Tambahan (Opsional):
-                                    </label>
-                                    <input type="url" id="ebook-url-input"
-                                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="https://drive.google.com/file/d/...">
-                                </div>
-                                
-                                <!-- 3. Editor Kuis (JSON) -->
-                                <div class="mt-6">
-                                    <label for="quiz-json-input"
-                                        class="block text-sm font-medium text-gray-700 mb-2">
-                                        Tempel (Paste) JSON **Kuis** di Sini:
-                                    </label>
-                                    <textarea id="quiz-json-input" rows="15"
-                                        class="w-full p-4 border border-gray-300 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder='{ "questions": [ ... ] }'></textarea>
-                                </div>
-
-                                <!-- 4. Tombol Simpan -->
-                                <div class="flex gap-4 mt-6">
-                                    <button id="save-worksheet-btn"
-                                        class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-                                        Simpan Semua Perubahan
-                                    </button>
-                                </div>
-
-                                <!-- 5. Contoh JSON (Hanya Kuis) -->
-                                <div class="mt-6 p-4 bg-gray-50 rounded-lg border">
-                                    <h4 class="font-semibold mb-2">Contoh Format JSON Kuis:</h4>
-                                    <pre
-                                        class="text-xs text-gray-600 overflow-auto"><code>{
-  "questions": [
-    {
-      "question_type": "multiple_choice",
-      "question_text": "Teks pertanyaan?",
-      "options": ["Opsi A", "Opsi B", "Opsi C"],
-      "correct_answer": 2
-    },
-    {
-      "question_type": "true_false",
-      "question_text": "Ini benar?",
-      "correct_answer": true
-    },
-    {
-      "type": "fill_in_the_blank",
-      "question": "A person who buys goods is a ____.",
-      "answer": "customer"
-    }
-  ]
-}</code></pre>
-                                </div>
-                            </div>
-
-                            <!-- Tab: Rekap Nilai (Dosen) -->
-                            <div id="submissions-content" class="hidden">
-                                <div id="submissions-loading" class="text-center text-gray-500">Memuat rekap nilai...
-                                </div>
-                                <div id="submissions-empty" class="hidden text-center text-gray-500">
-                                    Belum ada mahasiswa yang mengerjakan.
-                                </div>
-                                <div id="submissions-list" class="space-y-4">
-                                    <!-- Rekap akan di-render di sini -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Notifikasi/Pesan Toast -->
-    <div id="toast-message"
-        class="hidden fixed bottom-5 right-5 px-6 py-3 rounded-lg text-white shadow-lg transition-all duration-300">
-        <span id="toast-text"></span>
-    </div>
-
-
-    <!-- Firebase SDK -->
+    <!-- =============================================== -->
+    <!-- MODUL JAVASCRIPT DAN FIREBASE -->
+    <!-- =============================================== -->
     <script type="module">
+        // Impor fungsi Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import {
-            getAuth,
-            signInWithEmailAndPassword,
-            onAuthStateChanged,
-            signOut
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import {
-            getFirestore,
-            setLogLevel,
-            doc,
-            getDoc,
-            setDoc,
-            updateDoc,
-            collection,
-            onSnapshot,
-            query,
-            writeBatch,
-            where
+            getFirestore, doc, getDoc, addDoc, setDoc, updateDoc,
+            onSnapshot, collection, query, where, getDocs, setLogLevel
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- KONFIGURASI FIREBASE ---
@@ -304,400 +327,1058 @@
 
         // --- Inisialisasi Firebase ---
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
         const auth = getAuth(app);
-        setLogLevel('Debug'); // Tampilkan log debug Firestore
+        const db = getFirestore(app);
+        setLogLevel('Debug'); // Aktifkan log debug Firestore
 
         // --- Path Koleksi ---
+        // Kita gunakan koleksi root agar mudah di-debug
         const materialsColPath = "materials";
         const submissionsColPath = "submissions";
+        const usersColPath = "users"; // Koleksi untuk menyimpan nama mahasiswa
 
         // --- Variabel Global & State ---
-        let currentUser = null;
         let userRole = null; // 'mahasiswa' atau 'dosen'
+        let currentUserId = null;
+        let currentUserEmail = null;
         let currentEditingMaterialId = null;
-        let isTinymceInitialized = false; // Flag untuk TinyMCE
+        let materialsCache = new Map(); // Cache untuk data materi
+        let submissionsCache = new Map(); // Cache untuk data nilai
+        let usersCache = new Map(); // Cache untuk data nama mahasiswa
 
-        // Cache lokal untuk data
-        const materialsCache = new Map();
-        const submissionsCache = new Map();
-
-        // Unsubscribe listeners (untuk cleanup)
-        let materialsListener = null;
-        let submissionsListener = null;
-
-        // --- Elemen UI ---
+        // --- Elemen DOM ---
+        // Layar
         const loginScreen = document.getElementById('login-screen');
-        const appScreen = document.getElementById('app-screen');
+        const dashboardScreen = document.getElementById('dashboard-screen');
+        // Form Login
         const loginForm = document.getElementById('login-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
         const loginError = document.getElementById('login-error');
-        const userInfo = document.getElementById('user-info');
-        const logoutBtn = document.getElementById('logout-btn');
-
+        // Sidebar
         const materialList = document.getElementById('material-list');
-        const materialListLoading = document.getElementById('material-list-loading');
-        const addMaterialBtn = document.getElementById('add-material-btn');
-
-        const welcomeMessage = document.getElementById('welcome-message');
-        const materialDetail = document.getElementById('material-detail');
+        const userRoleDisplay = document.getElementById('user-role-display').querySelector('span');
+        const userEmailDisplay = document.getElementById('user-email-display');
+        const logoutButton = document.getElementById('logout-button');
+        const addMaterialContainer = document.getElementById('add-material-container');
+        // Konten Utama
         const materialTitle = document.getElementById('material-title');
-        const editTitleIconBtn = document.getElementById('edit-title-icon-btn'); 
-
-        const tabEdit = document.getElementById('tab-edit');
-        const tabSubmissions = document.getElementById('tab-submissions');
-
+        const editTitleBtn = document.getElementById('edit-title-btn');
+        const materialTabs = document.getElementById('material-tabs');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabButtonsDosen = document.querySelectorAll('.tab-button-dosen');
+        // Kontainer Tab
         const worksheetContent = document.getElementById('worksheet-content');
+        const editContent = document.getElementById('edit-content');
+        const recapContent = document.getElementById('recap-content');
+        // Detail Lembar Kerja
+        const worksheetDetails = document.getElementById('worksheet-details');
         const worksheetLoading = document.getElementById('worksheet-loading');
         const worksheetEmpty = document.getElementById('worksheet-empty');
-        const worksheetFormContainer = document.getElementById('worksheet-form-container');
+        const ebookLinkContainer = document.getElementById('ebook-link-container');
+        const ebookLink = document.getElementById('ebook-link');
         const worksheetReadingContent = document.getElementById('worksheet-reading-content');
+        const worksheetFormContainer = document.getElementById('worksheet-form-container');
         const submitWorksheetBtn = document.getElementById('submit-worksheet-btn');
-
-        const editContent = document.getElementById('edit-content');
-        // GANTI: 'worksheet-json-input' -> 'quiz-json-input'
-        const quizJsonInput = document.getElementById('quiz-json-input'); 
-
-        const submissionsContent = document.getElementById('submissions-content');
-        const submissionsLoading = document.getElementById('submissions-loading');
-        const submissionsEmpty = document.getElementById('submissions-empty');
-        const submissionsList = document.getElementById('submissions-list');
-
+        const scoreCard = document.getElementById('worksheet-score-card');
+        const scoreCardText = document.getElementById('score-card-text');
+        // Detail Edit
+        const ebookUrlInput = document.getElementById('ebook-url-input');
+        const readingContentEditor = document.getElementById('reading-content-editor');
+        const worksheetJsonInput = document.getElementById('worksheet-json-input');
+        const saveWorksheetBtn = document.getElementById('save-worksheet-btn');
+        // Detail Rekap
+        const recapMaterialTitle = document.getElementById('recap-material-title');
+        const recapLoading = document.getElementById('recap-loading');
+        const recapNoData = document.getElementById('recap-no-data');
+        const recapTable = document.getElementById('recap-table');
+        const recapTableBody = document.getElementById('recap-table-body');
+        // Notifikasi
+        const toast = document.getElementById('toast-notification');
         const toastMessage = document.getElementById('toast-message');
-        const toastText = document.getElementById('toast-text');
 
+        // ===============================================
+        // FUNGSI UTAMA APLIKASI
+        // ===============================================
 
-        /** 1. Fungsi Tampilan (UI) */
-
-        // Tampilkan pesan notifikasi
-        function showMessage(message, type = "success") {
-            toastText.textContent = message;
-            if (type === "error") {
-                toastMessage.className = "fixed bottom-5 right-5 px-6 py-3 rounded-lg text-white shadow-lg bg-red-500";
+        /**
+         * Menampilkan notifikasi toast.
+         * @param {string} message - Pesan yang ingin ditampilkan.
+         * @param {'success' | 'error'} type - Tipe notifikasi.
+         */
+        function showMessage(message, type = 'success') {
+            toastMessage.textContent = message;
+            if (type === 'success') {
+                toast.classList.remove('bg-red-500');
+                toast.classList.add('bg-green-500');
             } else {
-                toastMessage.className = "fixed bottom-5 right-5 px-6 py-3 rounded-lg text-white shadow-lg bg-green-600";
+                toast.classList.remove('bg-green-500');
+                toast.classList.add('bg-red-500');
             }
 
-            toastMessage.classList.remove('hidden');
+            toast.classList.remove('hidden', 'translate-y-16', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
             setTimeout(() => {
-                toastMessage.classList.add('hidden');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-16', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
             }, 3000);
         }
 
-        // Tentukan peran (role) berdasarkan email
-        function getRoleFromEmail(email) {
+        /**
+         * Fungsi untuk mereset UI ke state awal (saat logout atau ganti materi).
+         */
+        function resetUI() {
+            console.log("Resetting UI...");
+            // Reset state
+            currentEditingMaterialId = null;
+            userRole = null;
+            currentUserId = null;
+            currentUserEmail = null;
+            materialsCache.clear();
+            submissionsCache.clear();
+            usersCache.clear();
+
+            // Sembunyikan dashboard, tampilkan login
+            loginScreen.classList.remove('hidden');
+            dashboardScreen.classList.add('hidden');
+
+            // Kosongkan daftar materi
+            materialList.innerHTML = '';
+            // Reset judul
+            materialTitle.textContent = 'Pilih materi dari daftar di sebelah kiri';
+            editTitleBtn.classList.add('hidden');
+            // Sembunyikan tab
+            materialTabs.classList.add('hidden');
+            // Sembunyikan semua konten tab
+            worksheetContent.classList.remove('hidden');
+            worksheetDetails.classList.add('hidden');
+            editContent.classList.add('hidden');
+            recapContent.classList.add('hidden');
+            // Tampilkan state empty
+            worksheetLoading.classList.add('hidden');
+            worksheetEmpty.classList.remove('hidden');
+            // Reset form login
+            loginForm.reset();
+            loginError.classList.add('hidden');
+        }
+
+        /**
+         * Menangani proses login.
+         */
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            loginError.classList.add('hidden');
+            loginError.textContent = '';
+
+            try {
+                // Login menggunakan Firebase Auth
+                await signInWithEmailAndPassword(auth, email, password);
+                // Status login akan ditangani oleh onAuthStateChanged
+                showMessage("Login berhasil!", "success");
+            } catch (error) {
+                console.error("Login Gagal:", error.code, error.message);
+                if (error.code === 'auth/network-request-failed') {
+                    loginError.textContent = 'Login Gagal: Tidak dapat terhubung ke server. (Pastikan domain scf.usercontent.goog sudah di-whitelist di Firebase Auth)';
+                    console.error("Firebase Auth Error: auth/network-request-failed. Ini BUKAN error kode, tapi masalah konfigurasi Firebase. Domain 'scf.usercontent.goog' (atau domain preview ini) HARUS ditambahkan ke 'Authorized domains' di Firebase Authentication -> Settings.");
+                } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                    loginError.textContent = 'Email atau password salah. Silakan coba lagi.';
+                } else {
+                    loginError.textContent = `Login Gagal: ${error.message}`;
+                }
+                loginError.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Menangani proses logout.
+         */
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                // Status logout akan ditangani oleh onAuthStateChanged
+                resetUI();
+                showMessage("Logout berhasil.", "success");
+            } catch (error) {
+                console.error("Logout Gagal:", error);
+                showMessage("Logout gagal, silakan coba lagi.", "error");
+            }
+        }
+
+        /**
+         * Mendeteksi peran (role) pengguna berdasarkan email.
+         * @param {string} email - Email pengguna.
+         * @returns {'dosen' | 'mahasiswa'} - Peran pengguna.
+         */
+        function detectUserRole(email) {
             if (!email) return 'mahasiswa';
+            // Asumsi: email dosen mengandung kata 'dosen' atau 'guru'
             if (email.includes('dosen') || email.includes('guru')) {
                 return 'dosen';
             }
             return 'mahasiswa';
         }
-        
-        // Render UI berdasarkan state login
-        function renderUI(user) {
-            if (user) {
-                // Pengguna Login
-                currentUser = user;
-                userRole = getRoleFromEmail(user.email);
-                
-                userInfo.textContent = `Login sebagai: ${user.email} (${userRole})`;
-                loginScreen.classList.add('hidden');
-                appScreen.classList.remove('hidden');
 
-                // Tampilkan UI khusus Dosen
-                if (userRole === 'dosen') {
-                    tabEdit.classList.remove('hidden');
-                    tabSubmissions.classList.remove('hidden');
-                    addMaterialBtn.classList.remove('hidden');
-                    editTitleIconBtn.classList.remove('hidden');
-                    submitWorksheetBtn.classList.add('hidden'); 
-                    
-                    // Inisialisasi TinyMCE satu kali (jika belum)
-                    if (!isTinymceInitialized) {
-                        console.log("Inisialisasi TinyMCE untuk Dosen...");
-                        tinymce.init({
-                            selector: '#reading-content-editor',
-                            plugins: 'lists link image table code help wordcount autoresize',
-                            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image | table | code',
-                            height: 400,
-                            menubar: false,
-                            setup: (editor) => {
-                                editor.on('init', () => {
-                                    isTinymceInitialized = true;
-                                    console.log('TinyMCE berhasil dimuat.');
-                                });
-                            }
-                        });
-                    }
-
-                } else {
-                    // Tampilan Mahasiswa
-                    tabEdit.classList.add('hidden');
-                    tabSubmissions.classList.add('hidden');
-                    addMaterialBtn.classList.add('hidden');
-                    editTitleIconBtn.classList.add('hidden');
-                }
-                
-                // Mulai listener data
-                initDataListeners();
-
-                // Panggil createIcons SETELAH app-screen terlihat
-                try {
-                    lucide.createIcons();
-                } catch(e) { console.warn("Lucide icons render fail on auth change", e) }
-
-            } else {
-                // Pengguna Logout
-                currentUser = null;
-                userRole = null;
-                
-                loginScreen.classList.remove('hidden');
-                appScreen.classList.add('hidden');
-                loginError.textContent = "";
-                loginForm.reset();
-                
-                // Hentikan listener data
-                if (materialsListener) materialsListener();
-                if (submissionsListener) submissionsListener();
-                
-                // Bersihkan UI
-                materialsCache.clear();
-                submissionsCache.clear();
-                editTitleIconBtn.classList.add('hidden');
-                resetUI();
-            }
+        /**
+         * Mendapatkan nama tampilan (Display Name) untuk mahasiswa.
+         * @param {string} email - Email mahasiswa.
+         * @returns {string} - Nama tampilan (cth: "Mahasiswa A").
+         */
+        function getStudentDisplayName(email) {
+            if (email.includes('mahasiswa.a')) return 'Mahasiswa A';
+            if (email.includes('mahasiswa.b')) return 'Mahasiswa B';
+            if (email.includes('mahasiswa.c')) return 'Mahasiswa C';
+            // Default jika polanya tidak cocok
+            return email.split('@')[0];
         }
 
-
-        /** 2. Fungsi Autentikasi (Auth) */
-
-        // Handle Login
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = loginForm.email.value;
-            const password = loginForm.password.value;
-            loginError.textContent = "Mencoba login...";
-
+        /**
+         * Menyimpan/Memperbarui nama pengguna di Firestore.
+         */
+        async function saveUserData(uid, email, role) {
             try {
-                await signInWithEmailAndPassword(auth, email, password);
-                loginError.textContent = ""; 
-            } catch (error) {
-                console.error("Login Gagal:", error.code, error.message);
-                if (error.code === 'auth/network-request-failed') {
-                    loginError.textContent = "Gagal terhubung. Cek koneksi internet atau pengaturan domain di Firebase.";
-                } 
-                else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                    loginError.textContent = "Email atau Password salah.";
+                const userDocRef = doc(db, usersColPath, uid);
+                let displayName;
+
+                if (role === 'mahasiswa') {
+                    displayName = getStudentDisplayName(email);
                 } else {
-                    loginError.textContent = "Terjadi kesalahan. Coba lagi.";
+                    displayName = email.split('@')[0]; // Nama default untuk dosen
                 }
-            }
-        }
 
-        // Handle Logout
-        async function handleLogout() {
-            try {
-                await signOut(auth);
+                await setDoc(userDocRef, {
+                    email: email,
+                    role: role,
+                    displayName: displayName
+                }, { merge: true });
+
+                console.log("User data saved/updated:", uid, displayName);
             } catch (error) {
-                console.error("Logout Gagal:", error);
+                console.error("Error saving user data:", error);
             }
         }
-        
-        // Listener Status Auth
-        function initAppSetup() {
-             onAuthStateChanged(auth, (user) => {
-                console.log("Status Auth berubah, user:", user ? user.email : 'null');
-                renderUI(user);
-            });
-        }
-        
 
-        /** 3. Penanganan Data Materi (Firestore) - DIPERBARUI */
+        /**
+         * Inisialisasi listener onSnapshot (real-time).
+         * Dipanggil setelah login berhasil.
+         */
+        function initAppSetup(uid, role) {
+            console.log("Initializing app setup for user:", uid, "Role:", role);
 
-        // Mulai listener Firestore (hanya saat login)
-        function initDataListeners() {
-            console.log("Memulai listener data...");
-            
-            // 1. Listener untuk Materi
-            if (materialsListener) materialsListener(); 
-            const qMaterials = query(collection(db, materialsColPath));
-            materialsListener = onSnapshot(qMaterials, onMaterialsUpdate, (error) => {
-                console.error("Error mengambil materi:", error);
-                if (error.code === 'permission-denied') {
-                     materialListLoading.textContent = "Error: Izin ditolak (permission-denied). Cek Firestore Rules.";
-                }
-            });
-
-            // 2. Listener untuk Nilai (Submissions)
-            if (submissionsListener) submissionsListener();
-            let qSubmissions;
-            if (userRole === 'dosen') {
-                qSubmissions = query(collection(db, submissionsColPath));
+            // 1. Setup UI berdasarkan Peran
+            userRoleDisplay.textContent = role;
+            if (role === 'dosen') {
+                addMaterialContainer.classList.remove('hidden');
+                tabButtonsDosen.forEach(btn => btn.classList.remove('hidden'));
             } else {
-                qSubmissions = query(collection(db, submissionsColPath), where("userId", "==", currentUser.uid));
-            }
-            submissionsListener = onSnapshot(qSubmissions, onSubmissionsUpdate, (error) => {
-                 console.error("Error mengambil nilai:", error);
-            });
-        }
-        
-        // Callback saat data materi berubah - DIPERBARUI
-        function onMaterialsUpdate(snapshot) {
-            materialsCache.clear(); // Hapus cache lama
-            let materialsArray = [];
-
-            if (snapshot.empty && userRole === 'dosen') {
-                setupInitialData();
-                return;
+                addMaterialContainer.classList.add('hidden');
+                tabButtonsDosen.forEach(btn => btn.classList.add('hidden'));
             }
 
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                let worksheetObject = null;
-                
-                // GANTI: 'worksheetJsonString' -> 'quizJsonString'
-                // 'worksid' adalah typo, data lama mungkin masih pakai itu
-                const jsonString = data.quizJsonString || data.worksheetJsonString || data.worksid || null;
-
-                if (jsonString) {
-                    try {
-                        worksheetObject = JSON.parse(jsonString);
-                    } catch (e) {
-                        console.error(`JSON kuis tidak valid untuk materi ${doc.id}:`, e);
-                    }
-                }
-                
-                const material = {
-                    id: doc.id,
-                    title: data.title,
-                    ebookUrl: data.ebookUrl || null,
-                    // TAMBAHKAN: Field HTML baru
-                    readingContentHTML: data.readingContentHTML || '',
-                    // GANTI: Field JSON lama ke baru
-                    quizJsonString: jsonString,
-                    // 'worksheet' sekarang HANYA berisi kuis (atau JSON lama)
-                    worksheet: worksheetObject 
-                };
-                
-                materialsCache.set(doc.id, material);
-                materialsArray.push(material);
-            });
-
-            // Urutkan materi
-            const getSortKey = (titleOrId) => {
-                const match = titleOrId.match(/(\d+)/);
-                return match ? parseInt(match[1], 10) : 99;
-            };
-            materialsArray.sort((a, b) => {
-                const keyA = getSortKey(a.id) || getSortKey(a.title);
-                const keyB = getSortKey(b.id) || getSortKey(b.title);
-                return keyA - keyB;
-            });
-
-            // Render daftar materi di sidebar
-            renderMaterialList(materialsArray);
-            
-            // Jika ada materi yang sedang dilihat, refresh kontennya
-            if (currentEditingMaterialId && materialsCache.has(currentEditingMaterialId)) {
-                materialTitle.textContent = materialsCache.get(currentEditingMaterialId).title;
-                const activeTab = document.querySelector('.tab-btn.text-blue-600').id.split('-')[1];
-                showTab(activeTab);
-            }
-        }
-        
-        // Setup data awal jika database kosong - DIPERBARUI
-        async function setupInitialData() {
-            console.log("Database materi kosong. Membuat 12 materi awal...");
-            const batch = writeBatch(db);
-            const titles = [
-                "Pertemuan 1: Introduction to Business English", "Pertemuan 2: Telephoning Skills",
-                "Pertemuan 3: Business Correspondence (Emails)", "Pertemuan 4: Meetings and Discussions",
-                "Pertemuan 5: Presentations Skills", "Pertemuan 6: UTS (Ujian Tengah Semester)",
-                "Pertemuan 7: Negotiations", "Pertemuan 8: Business Vocabulary (Finance)",
-                "Pertemuan 9: Business Vocabulary (Marketing)", "Pertemuan 10: Intercultural Communication",
-                "Pertemuan 11: Review Materi", "Pertemuan 12: UAS (Ujian Akhir Semester)"
-            ];
-
-            titles.forEach((title, index) => {
-                const docId = `materi-${index + 1}`;
-                const docRef = doc(db, materialsColPath, docId);
-                batch.set(docRef, {
-                    title: title,
-                    ebookUrl: null,
-                    readingContentHTML: "", // Field HTML baru
-                    quizJsonString: null // Field Kuis baru
+            // 2. Listener untuk Data Pengguna (Nama Mahasiswa)
+            const usersQuery = query(collection(db, usersColPath));
+            onSnapshot(usersQuery, (querySnapshot) => {
+                console.log("Received users snapshot.");
+                usersCache.clear();
+                querySnapshot.forEach((doc) => {
+                    usersCache.set(doc.id, doc.data());
                 });
+                console.log("Users cache updated:", usersCache);
+                // Jika sedang di tab rekap, perbarui
+                if (currentEditingMaterialId && recapContent.style.display !== 'none') {
+                    renderRecapTab(currentEditingMaterialId);
+                }
+            }, (error) => console.error("Error listening to users:", error));
+
+
+            // 3. Listener untuk Materi
+            // Kita ambil semua materi, lalu urutkan di client
+            const materialsQuery = query(collection(db, materialsColPath));
+            onSnapshot(materialsQuery, (querySnapshot) => {
+                console.log("Received materials snapshot.");
+                const materials = [];
+                querySnapshot.forEach((doc) => {
+                    materials.push({ id: doc.id, ...doc.data() });
+                });
+                onMaterialsUpdate(materials);
+            }, (error) => console.error("Error listening to materials:", error));
+
+            // 4. Listener untuk Nilai (Submissions)
+            // Dosen: ambil semua nilai. Mahasiswa: ambil nilainya sendiri.
+            let submissionsQuery;
+            if (role === 'dosen') {
+                submissionsQuery = query(collection(db, submissionsColPath));
+            } else {
+                submissionsQuery = query(collection(db, submissionsColPath), where("userId", "==", uid));
+            }
+
+            onSnapshot(submissionsQuery, (querySnapshot) => {
+                console.log("Received submissions snapshot.");
+                submissionsCache.clear();
+                querySnapshot.forEach((doc) => {
+                    submissionsCache.set(doc.id, doc.data());
+                });
+                console.log("Submissions cache updated:", submissionsCache);
+
+                // Jika ada materi yang sedang dipilih, render ulang
+                if (currentEditingMaterialId) {
+                    // Cek tab mana yang aktif
+                    const activeTab = document.querySelector('.tab-button[data-selected="true"]')?.dataset.tab || 'worksheet';
+                    if (activeTab === 'worksheet') {
+                        renderWorksheet(currentEditingMaterialId);
+                    } else if (activeTab === 'recap') {
+                        renderRecapTab(currentEditingMaterialId);
+                    }
+                }
+            }, (error) => console.error("Error listening to submissions:", error));
+
+            // 5. Cek data awal (khusus dosen)
+            if (role === 'dosen') {
+                setupInitialData();
+            }
+        }
+
+        /**
+         * Membuat 12 materi awal jika database kosong (hanya dipanggil oleh dosen).
+         */
+        async function setupInitialData() {
+            try {
+                // Cek apakah koleksi 'materials' sudah ada isinya
+                const q = query(collection(db, materialsColPath));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    console.log("Database kosong, membuat 12 materi awal...");
+                    // Database kosong, buat 12 materi
+                    const initialMaterials = [
+                        { title: "Pertemuan 1: Introduction to Business English", order: 1 },
+                        { title: "Pertemuan 2: Telephoning", order: 2 },
+                        { title: "Pertemuan 3: Business Correspondence (Emails)", order: 3 },
+                        { title: "Pertemuan 4: Meetings and Discussions", order: 4 },
+                        { title: "Pertemuan 5: Presentations", order: 5 },
+                        { title: "Pertemuan 6: UTS (Mid-Term Exam)", order: 6 },
+                        { title: "Pertemuan 7: Negotiations", order: 7 },
+                        { title: "Pertemuan 8: Business Vocabulary (Finance)", order: 8 },
+                        { title: "Pertemuan 9: Business Vocabulary (Marketing)", order: 9 },
+                        { title: "Pertemuan 10: Socializing and Networking", order: 10 },
+                        { title: "Pertemuan 11: Writing Reports", order: 11 },
+                        { title: "Pertemuan 12: UAS (Final Exam)", order: 12 },
+                    ];
+
+                    for (const mat of initialMaterials) {
+                        // Kita gunakan addDoc agar ID dibuat otomatis
+                        await addDoc(collection(db, materialsColPath), mat);
+                    }
+                    showMessage("Berhasil membuat 12 materi awal.", "success");
+                } else {
+                    console.log("Database sudah berisi materi, tidak perlu setup awal.");
+                }
+            } catch (error) {
+                console.error("Error setting up initial data:", error);
+                showMessage("Gagal membuat materi awal.", "error");
+            }
+        }
+
+        /**
+         * Menangani update pada koleksi materi (dari onSnapshot).
+         * @param {Array} materials - Array objek materi dari Firestore.
+         */
+        function onMaterialsUpdate(materials) {
+            // 1. Urutkan materi berdasarkan field 'order' atau 'title'
+            materials.sort((a, b) => {
+                const orderA = a.order ?? a.title.split(' ')[1]?.replace(':', '') ?? 99;
+                const orderB = b.order ?? b.title.split(' ')[1]?.replace(':', '') ?? 99;
+                // Pastikan perbandingan numerik
+                return parseFloat(orderA) - parseFloat(orderB);
             });
 
-            try {
-                await batch.commit();
-                console.log("12 materi awal berhasil dibuat.");
-            } catch (error) {
-                console.error("Gagal membuat data awal:", error);
+            // 2. Simpan ke cache
+            materialsCache.clear();
+            materials.forEach(mat => materialsCache.set(mat.id, mat));
+
+            // 3. Render ulang daftar di sidebar
+            renderMaterialList();
+
+            // 4. Jika ada materi yang sedang diedit, perbarui judulnya
+            if (currentEditingMaterialId && materialsCache.has(currentEditingMaterialId)) {
+                const updatedMaterial = materialsCache.get(currentEditingMaterialId);
+                materialTitle.textContent = updatedMaterial.title;
             }
         }
-        
-        // Render daftar materi di sidebar
-        function renderMaterialList(materials) {
-            materialList.innerHTML = '';
-            if (materials.length === 0) {
-                materialListLoading.textContent = "Belum ada materi.";
-                materialListLoading.classList.remove('hidden');
+
+        /**
+         * Merender daftar materi di sidebar.
+         */
+        function renderMaterialList() {
+            materialList.innerHTML = ''; // Kosongkan daftar
+            if (materialsCache.size === 0) {
+                materialList.innerHTML = '<p class="p-4 text-sm text-gray-500">Belum ada materi.</p>';
                 return;
             }
-            
-            materialListLoading.classList.add('hidden');
-            
-            materials.forEach(material => {
-                const li = document.createElement('li');
-                li.className = `p-3 rounded-lg cursor-pointer transition duration-200 ${
-                    currentEditingMaterialId === material.id 
-                        ? 'bg-blue-100 text-blue-700 font-semibold' 
-                        : 'hover:bg-gray-100'
-                }`;
-                li.textContent = material.title;
-                li.setAttribute('data-id', material.id);
-                li.addEventListener('click', () => selectMaterial(material.id));
-                materialList.appendChild(li);
+
+            materialsCache.forEach((material, id) => {
+                const button = document.createElement('button');
+                button.className = "w-full text-left px-4 py-3 mb-1 rounded-lg hover:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-700 font-medium transition-colors duration-150";
+                button.textContent = material.title;
+                button.dataset.id = id;
+                button.dataset.selected = (id === currentEditingMaterialId);
+
+                // Tambahkan event listener untuk memilih materi
+                button.addEventListener('click', () => selectMaterial(id));
+
+                materialList.appendChild(button);
             });
         }
-        
-        // Handle klik tambah materi (Dosen) - DIPERBARUI
-        async function handleAddMaterial() {
-            const title = prompt("Masukkan judul materi baru:", `Pertemuan ${materialsCache.size + 1}`);
-            if (title && title.trim() !== "") {
-                try {
-                    const newId = `materi-${Date.now()}`;
-                    const docRef = doc(db, materialsColPath, newId);
-                    await setDoc(docRef, {
-                        title: title.trim(),
-                        ebookUrl: null,
-                        readingContentHTML: "", // Field HTML baru
-                        quizJsonString: null // Field Kuis baru
-                    });
-                    showMessage("Materi baru berhasil ditambahkan.", "success");
-                } catch (error) {
-                    console.error("Error menambah materi:", error);
-                    showMessage("Gagal menambah materi.", "error");
+
+        /**
+         * Menangani pemilihan materi dari sidebar.
+         * @param {string} materialId - ID dokumen materi yang dipilih.
+         */
+        function selectMaterial(materialId) {
+            console.log("Selecting material:", materialId);
+            currentEditingMaterialId = materialId;
+
+            // 1. Update UI Sidebar (tandai yang aktif)
+            document.querySelectorAll('#material-list button').forEach(btn => {
+                btn.dataset.selected = (btn.dataset.id === materialId);
+            });
+
+            // 2. Ambil data materi dari cache
+            const material = materialsCache.get(materialId);
+            if (!material) {
+                console.error("Materi tidak ditemukan di cache:", materialId);
+                return;
+            }
+
+            // 3. Update header konten utama
+            materialTitle.textContent = material.title;
+            materialTabs.classList.remove('hidden');
+
+            // 4. Tampilkan ikon edit judul (hanya dosen)
+            if (userRole === 'dosen') {
+                editTitleBtn.classList.remove('hidden');
+            }
+
+            // 5. Tampilkan tab pertama (Lembar Kerja)
+            showTab('worksheet');
+        }
+
+        /**
+         * Menampilkan konten tab yang dipilih (Lembar Kerja, Edit, Rekap).
+         * @param {'worksheet' | 'edit' | 'recap'} tabName - Nama tab yang akan ditampilkan.
+         */
+        function showTab(tabName) {
+            console.log("Showing tab:", tabName);
+
+            // 1. Update style tombol tab
+            tabButtons.forEach(btn => {
+                btn.dataset.selected = (btn.dataset.tab === tabName);
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add('border-blue-500', 'text-blue-600');
+                    btn.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                } else {
+                    btn.classList.remove('border-blue-500', 'text-blue-600');
+                    btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                 }
+            });
+
+            // 2. Sembunyikan semua konten tab
+            worksheetDetails.classList.add('hidden');
+            editContent.classList.add('hidden');
+            recapContent.classList.add('hidden');
+            worksheetLoading.classList.add('hidden');
+            worksheetEmpty.classList.add('hidden');
+
+            // 3. Tampilkan konten tab yang relevan
+            if (tabName === 'worksheet') {
+                worksheetContent.classList.remove('hidden');
+                worksheetDetails.classList.remove('hidden'); // Tampilkan wrapper
+                renderWorksheet(currentEditingMaterialId); // Render konten
+            } else if (tabName === 'edit' && userRole === 'dosen') {
+                worksheetContent.classList.remove('hidden');
+                editContent.classList.remove('hidden');
+                renderEditTab(currentEditingMaterialId); // Render konten
+            } else if (tabName === 'recap' && userRole === 'dosen') {
+                worksheetContent.classList.remove('hidden');
+                recapContent.classList.remove('hidden');
+                renderRecapTab(currentEditingMaterialId); // Render konten
+            } else {
+                // Fallback jika mahasiswa mencoba akses tab dosen
+                worksheetContent.classList.remove('hidden');
+                worksheetDetails.classList.remove('hidden');
+                renderWorksheet(currentEditingMaterialId);
+            }
+
+            // Panggil createIcons untuk ikon yang mungkin baru muncul
+            if (window.lucide) {
+                lucide.createIcons();
             }
         }
-        
-        // Handle Edit Judul (Dosen)
-        async function handleEditTitle() {
-            if (!currentEditingMaterialId) return;
-            const material = materialsCache.get(currentEditingMaterialId);
+
+        /**
+         * Merender konten untuk tab "Lembar Kerja".
+         * @param {string} materialId - ID materi yang akan dirender.
+         */
+        function renderWorksheet(materialId) {
+            console.log("Rendering worksheet for:", materialId);
+            const material = materialsCache.get(materialId);
             if (!material) return;
 
-            const currentTitle = material.title;
-            const newTitle = prompt("Masukkan judul materi baru:", currentTitle);
+            // Reset UI Lembar Kerja
+            // FIX: Pisahkan reset `worksheetReadingContent` dari `worksheetFormContainer`
+            worksheetFormContainer.innerHTML = '';
+            worksheetFormContainer.classList.add('hidden');
+            worksheetReadingContent.innerHTML = '';
+            worksheetReadingContent.classList.add('hidden'); // Sembunyikan default
+            ebookLinkContainer.classList.add('hidden');
+            scoreCard.classList.add('hidden'); // Sembunyikan score card
+            submitWorksheetBtn.classList.add('hidden');
 
-            if (newTitle && newTitle.trim() !== "" && newTitle.trim() !== currentTitle) {
+            worksheetLoading.classList.remove('hidden');
+            worksheetEmpty.classList.add('hidden');
+
+            // --- 1. Render Link eBook ---
+            if (material.ebookUrl) {
+                ebookLink.href = material.ebookUrl;
+                ebookLinkContainer.classList.remove('hidden');
+            }
+
+            // --- 2. Render Materi Bacaan ---
+            let hasReadingContent = false;
+            // Cek format baru (HTML)
+            if (material.readingContentHTML) {
+                worksheetReadingContent.innerHTML = material.readingContentHTML;
+                worksheetReadingContent.classList.remove('hidden');
+                hasReadingContent = true;
+            }
+            // Cek format lama (JSON) - fallback
+            else if (material.worksheet && material.worksheet.sections) {
+                renderReadingJSON(material.worksheet, worksheetReadingContent);
+                worksheetReadingContent.classList.remove('hidden');
+                hasReadingContent = true;
+            } else if (material.worksheet && material.worksheet.module_description) {
+                // Fallback lebih jauh untuk format JSON awal
+                worksheetReadingContent.innerHTML = `<p>${material.worksheet.module_description}</p>`;
+                worksheetReadingContent.classList.remove('hidden');
+                hasReadingContent = true;
+            }
+
+            // --- 3. Render Kuis ---
+            // Cek format baru (quizJsonString)
+            let quizData = null;
+            if (material.quizJsonString) {
+                try {
+                    quizData = JSON.parse(material.quizJsonString);
+                } catch (e) {
+                    console.error("Error parsing quizJsonString:", e);
+                }
+            }
+            // Cek format lama (worksheet) - fallback
+            else if (material.worksheet) {
+                quizData = material.worksheet;
+            }
+
+            const questions = quizData ? quizData.questions : null;
+
+            if (!questions || questions.length === 0) {
+                // Jika tidak ada kuis
+                worksheetLoading.classList.add('hidden');
+                if (!hasReadingContent) {
+                    // Jika tidak ada materi bacaan DAN tidak ada kuis
+                    worksheetEmpty.classList.remove('hidden');
+                    worksheetEmpty.querySelector('p').textContent = 'Belum ada materi atau kuis untuk pertemuan ini.';
+                }
+                return; // Berhenti
+            }
+
+            // --- 4. Cek Nilai (Submissions) ---
+            const submissionId = getSubmissionId(materialId);
+            const userSubmission = submissionsCache.get(submissionId);
+
+            // --- 5. Tampilkan Skor (Jika sudah mengerjakan) ---
+            if (userSubmission && userRole === 'mahasiswa') {
+                worksheetLoading.classList.add('hidden');
+                worksheetEmpty.classList.add('hidden');
+
+                // Tampilkan materi bacaan (jika ada) - sudah di-handle di atas
+                // Tampilkan Score Card
+                scoreCardText.textContent = userSubmission.score;
+                scoreCard.classList.remove('hidden');
+
+                // Pastikan form & submit button tersembunyi
+                worksheetFormContainer.classList.add('hidden');
+                submitWorksheetBtn.classList.add('hidden');
+                console.log("Mahasiswa sudah mengerjakan, tampilkan skor:", userSubmission.score);
+                return; // Selesai, jangan render form
+            }
+
+            // --- 6. Tampilkan Form Kuis (Jika belum mengerjakan / Dosen) ---
+            console.log("Merender form kuis...");
+            worksheetLoading.classList.add('hidden');
+            worksheetFormContainer.classList.remove('hidden'); // Tampilkan kontainer kuis
+            submitWorksheetBtn.classList.remove('hidden'); // Tampilkan tombol submit
+
+            questions.forEach((q, index) => {
+                // Deteksi format (baru vs lama)
+                const type = q.question_type || q.type;
+                const text = q.question_text || q.question;
+                const options = q.options;
+
+                if (!text) return; // Skip pertanyaan jika tidak ada teks
+
+                const questionWrapper = document.createElement('div');
+                questionWrapper.className = 'p-5 bg-white border border-gray-200 rounded-lg mb-4 shadow-sm';
+                questionWrapper.dataset.index = index; // Simpan index asli
+
+                let content = `<label class="block text-lg font-semibold text-gray-800 mb-4">${index + 1}. ${text}</label>`;
+
+                if (type === 'multiple_choice' && options) {
+                    content += '<div class="space-y-3">';
+                    options.forEach((opt, optIndex) => {
+                        content += `
+                            <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="radio" name="question_${index}" value="${optIndex}" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="ml-3 text-gray-700">${opt}</span>
+                            </label>
+                        `;
+                    });
+                    content += '</div>';
+                } else if (type === 'true_false') {
+                    content += `
+                        <div class="space-y-3">
+                            <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="radio" name="question_${index}" value="true" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="ml-3 text-gray-700">True</span>
+                            </label>
+                            <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="radio" name="question_${index}" value="false" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="ml-3 text-gray-700">False</span>
+                            </label>
+                        </div>
+                    `;
+                } else if (type === 'fill_in_the_blank') {
+                    content += `
+                        <input type="text" name="question_${index}" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                               placeholder="Tulis jawaban Anda...">
+                    `;
+                }
+
+                questionWrapper.innerHTML = content;
+                worksheetFormContainer.appendChild(questionWrapper);
+            });
+
+            // Sembunyikan tombol submit jika dosen
+            if (userRole === 'dosen') {
+                submitWorksheetBtn.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Merender materi bacaan dari format JSON lama (fallback).
+         */
+        function renderReadingJSON(worksheetData, container) {
+            let html = '';
+            if (worksheetData.module_description) {
+                html += `<p class="text-lg italic text-gray-600 mb-6">${worksheetData.module_description}</p>`;
+            }
+
+            if (worksheetData.sections) {
+                worksheetData.sections.forEach(section => {
+                    html += `<h3 class="text-2xl font-bold mt-6 mb-3">${section.section_title}</h3>`;
+                    section.section_content.forEach(content => {
+                        if (content.type === 'text') {
+                            html += `<p>${content.data}</p>`;
+                        } else if (content.type === 'list') {
+                            html += `<h4 class="font-semibold mt-2">${content.data.title}</h4>`;
+                            html += '<ul>';
+                            content.data.items.forEach(item => {
+                                html += `<li>${item}</li>`;
+                            });
+                            html += '</ul>';
+                        } else if (content.type === 'table') {
+                            html += '<div class="overflow-x-auto my-4">';
+                            html += '<table class="min-w-full">';
+                            html += '<thead><tr>';
+                            content.data.headers.forEach(header => {
+                                html += `<th class="text-left p-2 bg-gray-100">${header}</th>`;
+                            });
+                            html += '</tr></thead>';
+                            html += '<tbody>';
+                            content.data.rows.forEach(row => {
+                                html += '<tr>';
+                                row.forEach(cell => {
+                                    html += `<td class="text-left p-2 border-t">${cell}</td>`;
+                                });
+                                html += '</tr>';
+                            });
+                            html += '</tbody></table></div>';
+                        }
+                    });
+                });
+            }
+            container.innerHTML = html;
+        }
+
+
+        /**
+         * Merender konten untuk tab "Edit Worksheet" (Dosen).
+         * @param {string} materialId - ID materi yang akan diedit.
+         */
+        function renderEditTab(materialId) {
+            console.log("Rendering edit tab for:", materialId);
+            const material = materialsCache.get(materialId);
+            if (!material) return;
+
+            // 1. Set Link eBook
+            ebookUrlInput.value = material.ebookUrl || '';
+
+            // 2. Set Materi Bacaan (Rich Text)
+            // Inisialisasi TinyMCE
+            if (window.tinymce) {
+                tinymce.remove('#reading-content-editor'); // Hapus instance lama
+                tinymce.init({
+                    selector: '#reading-content-editor',
+                    height: 500,
+                    menubar: false,
+                    plugins: 'lists link image table code help wordcount',
+                    toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link | table | code',
+                    setup: (editor) => {
+                        editor.on('init', () => {
+                            // Set konten SETELAH editor siap
+                            const content = material.readingContentHTML || '';
+                            editor.setContent(content);
+                            console.log("TinyMCE initialized and content set.");
+                        });
+                    }
+                }).catch(err => console.error("TinyMCE Init Error:", err));
+            } else {
+                console.warn("TinyMCE script not loaded yet.");
+                // Fallback jika TinyMCE gagal load
+                readingContentEditor.value = material.readingContentHTML || '';
+            }
+
+
+            // 3. Set Kuis (JSON)
+            // Cek format baru (quizJsonString)
+            if (material.quizJsonString) {
+                worksheetJsonInput.value = material.quizJsonString;
+            }
+            // Cek format lama (worksheet) - fallback
+            else if (material.worksheet && material.worksheet.questions) {
+                // Jika hanya ada format lama, konversi ke string JSON
+                worksheetJsonInput.value = JSON.stringify({ questions: material.worksheet.questions }, null, 2);
+            }
+            // Kosongkan jika tidak ada
+            else {
+                worksheetJsonInput.value = '{\n  "questions": []\n}';
+            }
+        }
+
+        /**
+         * Merender konten untuk tab "Rekap Nilai" (Dosen).
+         * @param {string} materialId - ID materi yang rekapnya akan ditampilkan.
+         */
+        function renderRecapTab(materialId) {
+            console.log("Rendering recap tab for:", materialId);
+            const material = materialsCache.get(materialId);
+            if (!material) return;
+
+            recapMaterialTitle.textContent = material.title;
+            recapTableBody.innerHTML = ''; // Kosongkan tabel
+
+            // Tampilkan loading, sembunyikan sisanya
+            recapLoading.classList.remove('hidden');
+            recapTable.classList.add('hidden');
+            recapNoData.classList.add('hidden');
+
+            // 1. Filter nilai dari cache
+            const relevantSubmissions = [];
+            submissionsCache.forEach((sub, id) => {
+                // ID nilai harus mengandung ID materi
+                if (sub.materialId === materialId) {
+                    relevantSubmissions.push(sub);
+                }
+            });
+
+            // 2. Cek jika ada data
+            if (relevantSubmissions.length === 0) {
+                recapLoading.classList.add('hidden');
+                recapNoData.classList.remove('hidden');
+                return;
+            }
+
+            // 3. Render data ke tabel
+            relevantSubmissions.forEach(sub => {
+                // Ambil data nama mahasiswa dari cache
+                const user = usersCache.get(sub.userId);
+                const displayName = user ? user.displayName : 'Nama Tidak Ditemukan';
+                const email = user ? user.email : 'email@tidak.ada';
+                const timestamp = sub.submittedAt ? new Date(sub.submittedAt.seconds * 1000).toLocaleString('id-ID') : 'Kapan-kapan';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${displayName}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${email}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-600">${sub.score}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
+                `;
+                recapTableBody.appendChild(row);
+            });
+
+            // 4. Tampilkan tabel
+            recapLoading.classList.add('hidden');
+            recapTable.classList.remove('hidden');
+        }
+
+        /**
+         * Menghasilkan ID unik untuk dokumen submission.
+         * Format: <materialId>_<userId>
+         * @param {string} materialId - ID materi.
+         * @returns {string} - ID unik untuk submission.
+         */
+        function getSubmissionId(materialId) {
+            return `${materialId}_${currentUserId}`;
+        }
+
+        /**
+         * Menghitung nilai akhir kuis.
+         * @param {Array} questions - Array soal dari JSON.
+         * @param {Object} answers - Objek jawaban dari form.
+         * @returns {number} - Skor akhir (0-100).
+         */
+        function calculateGrade(questions, answers) {
+            let correctAnswers = 0;
+            let totalQuestions = questions.length;
+
+            questions.forEach((q, index) => {
+                const userAnswer = answers[`question_${index}`];
+                if (userAnswer === undefined || userAnswer === null) {
+                    return; // Tidak dijawab
+                }
+
+                // Deteksi format (baru vs lama)
+                const type = q.question_type || q.type;
+                let correctAnswer;
+
+                // --- Logika penentuan jawaban benar ---
+                if (type === 'multiple_choice') {
+                    // Format baru: correct_answer adalah index (angka)
+                    if (q.correct_answer !== undefined) {
+                        correctAnswer = q.correct_answer.toString(); // "1"
+                    }
+                    // Format lama: answer adalah teks
+                    else if (q.answer) {
+                        const correctIndex = q.options.findIndex(opt => opt === q.answer);
+                        correctAnswer = correctIndex.toString(); // "0"
+                    }
+                }
+                else if (type === 'true_false') {
+                    // Format baru: correct_answer adalah boolean
+                    correctAnswer = q.correct_answer.toString(); // "true" atau "false"
+                }
+                else if (type === 'fill_in_the_blank') {
+                    // Format lama: answer adalah teks
+                    correctAnswer = q.answer;
+                }
+                // --- Selesai logika ---
+
+
+                // Cek jawaban
+                if (type === 'fill_in_the_blank') {
+                    if (userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase()) {
+                        correctAnswers++;
+                    }
+                } else {
+                    // Untuk multiple_choice dan true_false
+                    if (userAnswer === correctAnswer) {
+                        correctAnswers++;
+                    }
+                }
+            });
+
+            if (totalQuestions === 0) return 100; // Jika tidak ada kuis, anggap 100
+            return Math.round((correctAnswers / totalQuestions) * 100);
+        }
+
+        // ===============================================
+        // FUNGSI PENANGAN EVENT (Tombol, Form, dll)
+        // ===============================================
+
+        /**
+         * Menangani penyimpanan worksheet (Dosen).
+         */
+        async function handleSaveWorksheet() {
+            if (userRole !== 'dosen' || !currentEditingMaterialId) return;
+
+            console.log("Saving worksheet for:", currentEditingMaterialId);
+            saveWorksheetBtn.disabled = true;
+            saveWorksheetBtn.textContent = 'Menyimpan...';
+
+            try {
+                // 1. Ambil Link eBook
+                const ebookUrl = ebookUrlInput.value.trim();
+
+                // 2. Ambil Materi Bacaan (HTML) dari TinyMCE
+                const readingContentHTML = tinymce.get('reading-content-editor').getContent();
+
+                // 3. Ambil Kuis (JSON) dan validasi
+                const quizJsonString = worksheetJsonInput.value;
+                let parsedQuizData;
+                try {
+                    parsedQuizData = JSON.parse(quizJsonString);
+                    if (!parsedQuizData.questions || !Array.isArray(parsedQuizData.questions)) {
+                        throw new Error("Format JSON tidak valid. Harus memiliki array 'questions'.");
+                    }
+                } catch (e) {
+                    showMessage(e.message, "error");
+                    return; // Berhenti jika JSON tidak valid
+                }
+
+                // 4. Siapkan data untuk disimpan
+                const docRef = doc(db, materialsColPath, currentEditingMaterialId);
+                const dataToSave = {
+                    ebookUrl: ebookUrl || '', // Simpan string kosong jika tidak ada
+                    readingContentHTML: readingContentHTML || '',
+                    quizJsonString: quizJsonString,
+                    // Hapus field 'worksheet' yang lama jika ada (opsional, tapi bersih)
+                    // worksheet: deleteField() // Perlu impor deleteField
+                };
+
+                // 5. Simpan ke Firestore
+                // Kita gunakan 'update' bukan 'set' agar tidak menghapus field 'title'
+                await updateDoc(docRef, dataToSave);
+
+                showMessage("Materi berhasil disimpan!", "success");
+
+            } catch (error) {
+                console.error("Error saving worksheet:", error);
+                // Cek error spesifik (misal: nested arrays)
+                if (error.code === 'invalid-argument') {
+                    showMessage("Error: Data tidak valid. Pastikan JSON tidak mengandung nested array.", "error");
+                } else {
+                    showMessage("Gagal menyimpan materi.", "error");
+                }
+            } finally {
+                saveWorksheetBtn.disabled = false;
+                saveWorksheetBtn.textContent = 'Simpan Perubahan';
+            }
+        }
+
+        /**
+         * Menangani pengumpulan jawaban kuis (Mahasiswa).
+         */
+        async function handleSubmitWorksheet() {
+            if (userRole !== 'mahasiswa' || !currentEditingMaterialId) return;
+
+            console.log("Submitting worksheet for:", currentEditingMaterialId);
+
+            try {
+                // 1. Ambil data materi dari cache (untuk kuncinya)
+                const material = materialsCache.get(currentEditingMaterialId);
+                if (!material) throw new Error("Materi tidak ditemukan");
+
+                // Ambil data kuis (dari format baru atau lama)
+                let quizData = null;
+                if (material.quizJsonString) quizData = JSON.parse(material.quizJsonString);
+                else if (material.worksheet) quizData = material.worksheet;
+
+                if (!quizData || !quizData.questions) throw new Error("Data kuis tidak ditemukan");
+                const questions = quizData.questions;
+
+                // 2. Kumpulkan jawaban dari form
+                const answers = {};
+                const formElements = worksheetFormContainer.querySelectorAll('input, textarea');
+                formElements.forEach(el => {
+                    if (el.type === 'radio') {
+                        if (el.checked) {
+                            answers[el.name] = el.value;
+                        }
+                    } else if (el.type === 'text') {
+                        answers[el.name] = el.value;
+                    }
+                });
+
+                // 3. Hitung nilai
+                const finalGrade = calculateGrade(questions, answers);
+
+                // 4. Siapkan data untuk disimpan
+                const submissionId = getSubmissionId(currentEditingMaterialId);
+                const submissionData = {
+                    userId: currentUserId,
+                    materialId: currentEditingMaterialId,
+                    score: finalGrade,
+                    answers: answers, // Simpan jawaban mahasiswa
+                    submittedAt: new Date(), // Simpan timestamp
+                };
+
+                // 5. Simpan ke Firestore (gunakan set dengan merge)
+                const docRef = doc(db, submissionsColPath, submissionId);
+                await setDoc(docRef, submissionData, { merge: true });
+
+                // --- PERUBAHAN: Langsung tampilkan skor ---
+                worksheetFormContainer.classList.add('hidden');
+                submitWorksheetBtn.classList.add('hidden');
+
+                scoreCardText.textContent = finalGrade;
+                scoreCard.classList.remove('hidden');
+                // --- Akhir Perubahan ---
+
+                // Panggil createIcons untuk ikon centang
+                if (window.lucide) lucide.createIcons();
+
+                showMessage(`Jawaban berhasil disimpan! Skor Anda: ${finalGrade}`, "success");
+            } catch (error) {
+                console.error("Error submitting worksheet:", error);
+                showMessage("Gagal menyimpan jawaban: " + error.message, "error");
+            }
+        }
+
+        /**
+         * Menangani penambahan materi baru (Dosen).
+         */
+        async function handleAddMaterial() {
+            if (userRole !== 'dosen') return;
+
+            const title = prompt("Masukkan judul materi baru (cth: Pertemuan 13: Review)");
+            if (title && title.trim() !== "") {
+                try {
+                    // Tentukan 'order' baru
+                    const newOrder = materialsCache.size + 1;
+                    await addDoc(collection(db, materialsColPath), {
+                        title: title.trim(),
+                        order: newOrder,
+                        readingContentHTML: "", // Buat field kosong
+                        quizJsonString: '{\n  "questions": []\n}' // Buat kuis kosong
+                    });
+                    showMessage("Materi baru berhasil ditambahkan!", "success");
+                } catch (error) {
+                    console.error("Error adding material:", error);
+                    showMessage("Gagal menambahkan materi.", "error");
+                }
+            }
+        }
+
+        /**
+         * Menangani pengeditan judul materi (Dosen).
+         */
+        async function handleEditTitle() {
+            if (userRole !== 'dosen' || !currentEditingMaterialId) return;
+
+            const material = materialsCache.get(currentEditingMaterialId);
+            const newTitle = prompt("Masukkan judul baru:", material.title);
+
+            if (newTitle && newTitle.trim() !== "" && newTitle.trim() !== material.title) {
                 try {
                     const docRef = doc(db, materialsColPath, currentEditingMaterialId);
                     await updateDoc(docRef, {
                         title: newTitle.trim()
                     });
-                    showMessage("Judul materi berhasil diperbarui.", "success");
+                    showMessage("Judul berhasil diperbarui!", "success");
+                    // Judul akan otomatis update via onSnapshot
                 } catch (error) {
                     console.error("Error updating title:", error);
                     showMessage("Gagal memperbarui judul.", "error");
@@ -706,548 +1387,90 @@
         }
 
 
-        /** 4. Penanganan Tampilan Detail Materi */
-        
-        // Handle saat materi dipilih dari daftar
-        function selectMaterial(materialId) {
-            currentEditingMaterialId = materialId;
-            const material = materialsCache.get(materialId);
-            if (!material) return;
+        // ===============================================
+        // INISIALISASI DAN EVENT LISTENER UTAMA
+        // ===============================================
 
-            // Update UI daftar materi (highlight)
-            document.querySelectorAll('#material-list li').forEach(li => {
-                li.classList.toggle('bg-blue-100', li.getAttribute('data-id') === materialId);
-                li.classList.toggle('text-blue-700', li.getAttribute('data-id') === materialId);
-                li.classList.toggle('font-semibold', li.getAttribute('data-id') === materialId);
-            });
-            
-            // Tampilkan detail
-            welcomeMessage.classList.add('hidden');
-            materialDetail.classList.remove('hidden');
-            materialTitle.textContent = material.title;
+        // 1. Listener Status Autentikasi (Pintu Gerbang Utama)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // --- Pengguna LOGIN ---
+                console.log("Auth state changed: User is LOGGED IN", user.uid);
+                currentUserId = user.uid;
+                currentUserEmail = user.email;
+                userRole = detectUserRole(user.email);
 
-            // Tampilkan tab default (Worksheet)
-            showTab('worksheet');
-        }
-        
-        // Handle ganti tab - DIPERBARUI
-        window.showTab = (tabName) => {
-            // Sembunyikan semua konten tab
-            worksheetContent.classList.add('hidden');
-            editContent.classList.add('hidden');
-            submissionsContent.classList.add('hidden');
+                // Tampilkan dashboard
+                loginScreen.classList.add('hidden');
+                dashboardScreen.classList.remove('hidden');
 
-            // Atur style tombol tab
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('text-blue-600', 'border-blue-500');
-                btn.classList.add('text-gray-500', 'border-transparent');
-            });
+                // Update UI Sidebar
+                userEmailDisplay.textContent = currentUserEmail;
+                userEmailDisplay.title = currentUserEmail;
 
-            // Tampilkan tab yang dipilih
-            if (tabName === 'worksheet') {
-                worksheetContent.classList.remove('hidden');
-                document.getElementById('tab-worksheet').classList.add('text-blue-600', 'border-blue-500');
-                renderWorksheet(currentEditingMaterialId);
-                try { lucide.createIcons(); } catch(e) {}
-                
-            } else if (tabName === 'edit' && userRole === 'dosen') {
-                editContent.classList.remove('hidden');
-                document.getElementById('tab-edit').classList.add('text-blue-600', 'border-blue-500');
-                
-                // Muat data ke editor
-                const material = materialsCache.get(currentEditingMaterialId);
-                
-                // Muat ke Rich Text Editor
-                if (isTinymceInitialized && tinymce.get('reading-content-editor')) {
-                    tinymce.get('reading-content-editor').setContent(material.readingContentHTML || '');
-                } else {
-                    // Jika editor belum siap, coba muat ke textarea mentah
-                    document.getElementById('reading-content-editor').value = material.readingContentHTML || '';
-                }
+                // Simpan/update data pengguna (untuk rekap nama)
+                saveUserData(currentUserId, currentUserEmail, userRole);
 
-                // Muat ke input Link eBook
-                document.getElementById('ebook-url-input').value = material.ebookUrl || '';
-                
-                // Muat ke Textarea JSON Kuis
-                quizJsonInput.value = material.quizJsonString || '';
-                
-            } else if (tabName === 'submissions' && userRole === 'dosen') {
-                submissionsContent.classList.remove('hidden');
-                document.getElementById('tab-submissions').classList.add('text-blue-600', 'border-blue-500');
-                renderSubmissions(currentEditingMaterialId);
-            }
-        }
-        
-        // Reset UI saat logout
-        function resetUI() {
-            welcomeMessage.classList.remove('hidden');
-            materialDetail.classList.add('hidden');
-            materialList.innerHTML = '';
-            materialListLoading.textContent = "Memuat materi...";
-            materialListLoading.classList.remove('hidden');
-            editTitleIconBtn.classList.add('hidden');
-            currentEditingMaterialId = null;
-        }
+                // Setup listener real-time
+                initAppSetup(currentUserId, userRole);
 
-        /** 5. Penanganan Lembar Kerja (Worksheet) - FUNGSI DIPERBARUI */
-        
-        // Render soal di tab "Lembar Kerja" - DIPERBARUI
-        function renderWorksheet(materialId) {
-            const material = materialsCache.get(materialId);
-            const userSubmission = submissionsCache.get(getSubmissionId(materialId));
-            const ebookLinkContainer = document.getElementById('ebook-link-container');
-            const ebookLinkBtn = document.getElementById('ebook-link-btn');
-
-            worksheetFormContainer.innerHTML = '';
-            worksheetReadingContent.innerHTML = '';
-            ebookLinkContainer.classList.add('hidden');
-            document.getElementById('worksheet-score-card').classList.add('hidden'); // Sembunyikan score card
-            
-            worksheetLoading.classList.remove('hidden');
-            worksheetEmpty.classList.add('hidden');
-            worksheetFormContainer.classList.add('hidden');
-            submitWorksheetBtn.classList.add('hidden');
-
-            if (!material) {
-                worksheetLoading.classList.add('hidden');
-                worksheetEmpty.classList.remove('hidden');
-                return;
-            }
-
-            // --- Render Link eBook ---
-            if (material.ebookUrl) {
-                ebookLinkBtn.href = material.ebookUrl;
-                ebookLinkContainer.classList.remove('hidden');
-            }
-
-            // --- Render Materi Bacaan (Format BARU: HTML) ---
-            let hasReadingContent = false;
-            if (material.readingContentHTML && material.readingContentHTML.trim() !== '') {
-                worksheetReadingContent.innerHTML = material.readingContentHTML;
-                hasReadingContent = true;
-            } 
-            // --- Fallback ke Format LAMA (JSON 'sections') ---
-            else if (material.worksheet && material.worksheet.sections) {
-                console.log("Merender materi bacaan dari format JSON lama (sections)...");
-                hasReadingContent = true; // Tandai bahwa ada konten
-                // (Logika parsing JSON 'sections' lama tetap dipertahankan untuk kompatibilitas)
-                if (material.worksheet.module_description) {
-                    const desc = document.createElement('p');
-                    desc.className = 'text-lg italic text-gray-600 mb-6';
-                    desc.textContent = material.worksheet.module_description;
-                    worksheetReadingContent.appendChild(desc);
-                }
-                if (material.worksheet.sections && Array.isArray(material.worksheet.sections)) {
-                    material.worksheet.sections.forEach(section => {
-                        const sectionTitle = document.createElement('h3');
-                        sectionTitle.textContent = section.section_title;
-                        worksheetReadingContent.appendChild(sectionTitle);
-                        // ... (sisa logika parsing list, table, text dari JSON) ...
-                    });
-                }
-            }
-
-
-            // --- Render Kuis (Format Lama & Baru) ---
-            const questions = material.worksheet ? material.worksheet.questions : null;
-            
-            if (!questions || questions.length === 0) {
-                // Jika tidak ada kuis
-                if (hasReadingContent || material.ebookUrl) {
-                    // Ada materi bacaan atau ebook, tapi tidak ada kuis
-                    worksheetLoading.classList.add('hidden');
-                    worksheetEmpty.classList.add('hidden');
-                    // Tampilkan saja materi bacaan (sudah di-render di atas)
-                    worksheetReadingContent.classList.remove('hidden'); 
-                } else {
-                    // Tidak ada kuis, tidak ada materi, tidak ada ebook
-                    worksheetLoading.classList.add('hidden');
-                    worksheetEmpty.classList.remove('hidden');
-                }
-                return; // Berhenti
-            }
-
-            // --- CEK JIKA SUDAH MENGERJAKAN (Khusus Mahasiswa) ---
-            if (userSubmission && userRole === 'mahasiswa') {
-                worksheetLoading.classList.add('hidden');
-                worksheetEmpty.classList.add('hidden');
-                
-                // Tampilkan materi bacaan (jika ada)
-                if (hasReadingContent) {
-                    worksheetReadingContent.classList.remove('hidden'); 
-                }
-                
-                // Tampilkan Score Card
-                const scoreCard = document.getElementById('worksheet-score-card');
-                document.getElementById('score-card-text').textContent = userSubmission.score;
-                scoreCard.classList.remove('hidden');
-                
-                // Pastikan form & submit button tersembunyi
-                worksheetFormContainer.classList.add('hidden');
-                submitWorksheetBtn.classList.add('hidden');
-                return; // Selesai, jangan render form
-            }
-
-            // --- JIKA BELUM MENGERJAKAN (ATAU DOSEN) ---
-            // (Logika rendering form yang ada saat ini)
-            worksheetFormContainer.classList.remove('hidden');
-
-            // Tambahkan materi bacaan (HTML atau JSON lama) ke form container
-            worksheetFormContainer.appendChild(worksheetReadingContent);
-
-            // Jika ada materi bacaan, tambahkan pemisah
-            if (hasReadingContent) {
-                 const hr = document.createElement('hr');
-                 hr.className = 'my-8 border-t-2 border-gray-200';
-                 worksheetFormContainer.appendChild(hr);
-                 
-                 const quizTitle = document.createElement('h3');
-                 quizTitle.textContent = "Kuis / Lembar Kerja";
-                 quizTitle.className = 'text-2xl font-bold mb-6';
-                 worksheetFormContainer.appendChild(quizTitle);
-            }
-
-            // Buat form kuis
-            const form = document.createElement('form');
-            form.id = 'worksheet-form';
-            form.className = 'space-y-6';
-
-            questions.forEach((q, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'p-4 border border-gray-200 rounded-lg bg-white';
-                
-                const questionStr = q.question || q.question_text;
-                const questionText = document.createElement('p');
-                questionText.className = 'text-base font-medium text-gray-900 mb-3';
-                questionText.textContent = `${index + 1}. ${questionStr}`;
-                questionDiv.appendChild(questionText);
-
-                const answerContainer = document.createElement('div');
-                const savedAnswer = userSubmission?.answers?.[index] || '';
-                const qType = q.type || q.question_type;
-
-                if (qType === 'multiple_choice' && q.options) {
-                    answerContainer.className = 'space-y-2';
-                    q.options.forEach((option) => {
-                        const label = document.createElement('label');
-                        label.className = 'flex items-center p-3 rounded-md border border-gray-200 hover:bg-gray-50 cursor-pointer';
-                        const input = document.createElement('input');
-                        input.type = 'radio';
-                        input.name = `question-${index}`;
-                        input.value = option;
-                        input.className = 'h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500';
-                        if (option === savedAnswer) input.checked = true;
-                        const span = document.createElement('span');
-                        span.textContent = option;
-                        span.className = 'ml-3 text-sm text-gray-700';
-                        label.appendChild(input);
-                        label.appendChild(span);
-                        answerContainer.appendChild(label);
-                    });
-                } 
-                else if (qType === 'true_false') {
-                    answerContainer.className = 'space-y-2';
-                    const options = ["True", "False"];
-                    options.forEach((option) => {
-                        const label = document.createElement('label');
-                        label.className = 'flex items-center p-3 rounded-md border border-gray-200 hover:bg-gray-50 cursor-pointer';
-                        const input = document.createElement('input');
-                        input.type = 'radio';
-                        input.name = `question-${index}`;
-                        input.value = option;
-                        input.className = 'h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500';
-                        if (option.toLowerCase() === String(savedAnswer).toLowerCase()) input.checked = true;
-                        const span = document.createElement('span');
-                        span.textContent = option;
-                        span.className = 'ml-3 text-sm text-gray-700';
-                        label.appendChild(input);
-                        label.appendChild(span);
-                        answerContainer.appendChild(label);
-                    });
-                }
-                else if (qType === 'fill_in_the_blank') {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.name = `question-${index}`;
-                    input.className = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
-                    input.placeholder = 'Ketik jawaban Anda...';
-                    input.value = savedAnswer;
-                    answerContainer.appendChild(input);
-                }
-                
-                questionDiv.appendChild(answerContainer);
-                form.appendChild(questionDiv);
-            });
-            
-            worksheetFormContainer.appendChild(form);
-            
-            // Tampilkan form
-            worksheetLoading.classList.add('hidden');
-            worksheetEmpty.classList.add('hidden');
-            
-            if (userRole === 'mahasiswa') {
-                submitWorksheetBtn.classList.remove('hidden');
-            }
-        }
-        
-        // Handle Simpan Worksheet (Dosen) - DIPERBARUI
-        async function handleSaveWorksheet() {
-            if (!currentEditingMaterialId) {
-                showMessage("Tidak ada materi yang dipilih.", "error");
-                return;
-            }
-
-            // 1. Ambil data HTML dari Rich Text Editor
-            let htmlContent = '';
-            if (isTinymceInitialized && tinymce.get('reading-content-editor')) {
-                htmlContent = tinymce.get('reading-content-editor').getContent();
             } else {
-                // Fallback jika TinyMCE gagal (ambil dari textarea mentah)
-                htmlContent = document.getElementById('reading-content-editor').value;
+                // --- Pengguna LOGOUT ---
+                console.log("Auth state changed: User is LOGGED OUT");
+                resetUI();
             }
-            
-            // 2. Ambil data Link eBook
-            const ebookUrlInput = document.getElementById('ebook-url-input').value.trim();
-            
-            // 3. Ambil data JSON Kuis
-            const jsonInput = quizJsonInput.value.trim();
-            let jsonString = null; // Ini yang akan disimpan ke DB
+        });
 
-            if (jsonInput === "") {
-                // Jika input kuis dikosongkan, simpan sebagai null
-                jsonString = null;
-            } else {
-                // Jika ada input, coba parse
-                try {
-                    const parsedData = JSON.parse(jsonInput);
-                    // Validasi struktur (HANYA cek 'questions')
-                    if (parsedData && parsedData.questions && !Array.isArray(parsedData.questions)) {
-                        const errorMsg = "Format JSON Kuis tidak valid. Key 'questions' harus berupa array.";
-                        showMessage(errorMsg, "error");
-                        return; // Hentikan
-                    }
-                } catch (e) {
-                    // Tangani jika JSON-nya sendiri tidak valid (syntax error)
-                    showMessage(`Error: JSON Kuis tidak valid. Cek sintaks. (${e.message})`, "error");
-                    return;
-                }
-                
-                // Jika valid, simpan sebagai string
-                jsonString = jsonInput;
-            }
-
-            // 4. Siapkan data untuk disimpan
-            const dataToSave = {
-                readingContentHTML: htmlContent,  // Field HTML baru
-                ebookUrl: ebookUrlInput || null,   // Field Ebook
-                quizJsonString: jsonString         // Field Kuis baru
-                // Kita tidak lagi menyimpan 'worksid' atau 'worksheetJsonString'
-            };
-
-            try {
-                // Simpan data
-                const docRef = doc(db, materialsColPath, currentEditingMaterialId);
-                // Gunakan setDoc + merge: true agar menimpa field lama (seperti worksheetJsonString)
-                // dan memperbarui field yang ada (seperti title)
-                await setDoc(docRef, dataToSave, { merge: true }); 
-
-                showMessage("Materi dan kuis berhasil disimpan.", "success");
-                
-            } catch (error) {
-                console.error("Error saving worksheet:", error);
-                if (error.code === 'permission-denied') {
-                    showMessage("Error: Anda (dosen) tidak punya izin menyimpan materi.", "error");
-                } else {
-                    showMessage("Gagal menyimpan materi.", "error");
-                }
-            }
-        }
-
-        // Handle Simpan Jawaban (Mahasiswa) - (Fungsi ini tidak perlu diubah)
-        async function handleSubmitWorksheet() {
-            if (!currentEditingMaterialId || !currentUser) return;
-            const material = materialsCache.get(currentEditingMaterialId);
-            if (!material || !material.worksheet || !material.worksheet.questions || material.worksheet.questions.length === 0) {
-                showMessage("Materi ini tidak memiliki kuis untuk disimpan.", "error");
-                return;
-            }
-
-            const form = document.getElementById('worksheet-form');
-            if (!form) return;
-
-            const answers = [];
-            let totalQuestions = 0;
-            let score = 0;
-            
-            material.worksheet.questions.forEach((q, index) => {
-                totalQuestions++;
-                const inputs = form.elements[`question-${index}`];
-                let userAnswer = '';
-                const qType = q.type || q.question_type;
-                
-                if (qType === 'multiple_choice' || qType === 'true_false') {
-                    if (inputs.value) userAnswer = inputs.value;
-                } else if (qType === 'fill_in_the_blank') {
-                    if (inputs.value) userAnswer = inputs.value.trim();
-                }
-                
-                answers.push(userAnswer);
-
-                // --- Logika Penilaian ---
-                let correctAnswerText = '';
-                if (q.answer !== undefined) {
-                    correctAnswerText = String(q.answer).trim();
-                } else if (q.correct_answer !== undefined) {
-                    if (qType === 'multiple_choice' && q.options) {
-                        correctAnswerText = String(q.options[q.correct_answer]).trim();
-                    } else if (qType === 'true_false') {
-                        correctAnswerText = String(q.correct_answer).trim();
-                    }
-                }
-                
-                if (userAnswer.toLowerCase() === correctAnswerText.toLowerCase()) {
-                    score++;
-                }
-            });
-            
-            const finalGrade = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
-            
-            const submissionData = {
-                userId: currentUser.uid,
-                userEmail: currentUser.email,
-                materialId: currentEditingMaterialId,
-                materialTitle: material.title,
-                answers: answers,
-                score: finalGrade,
-                submittedAt: new Date()
-            };
-            
-            try {
-                const submissionId = getSubmissionId(currentEditingMaterialId);
-                const docRef = doc(db, submissionsColPath, submissionId);
-                await setDoc(docRef, submissionData, { merge: true });
-
-                // --- PERUBAHAN: Langsung tampilkan skor ---
-                worksheetFormContainer.classList.add('hidden');
-                submitWorksheetBtn.classList.add('hidden');
-                
-                const scoreCard = document.getElementById('worksheet-score-card');
-                document.getElementById('score-card-text').textContent = finalGrade;
-                scoreCard.classList.remove('hidden');
-                // --- Akhir Perubahan ---
-
-                showMessage(`Jawaban berhasil disimpan! Skor Anda: ${finalGrade}`, "success");
-            } catch (error) {
-                console.error("Error submitting worksheet:", error);
-                showMessage("Gagal menyimpan jawaban.", "error");
-            }
-        }
-
-
-        /** 6. Penanganan Nilai (Submissions) */
-        
-        // Buat ID submission yang unik per (user, materi)
-        function getSubmissionId(materialId) {
-            if (!currentUser) return null;
-            return `${currentUser.uid}_${materialId}`;
-        }
-        
-        // Callback saat data nilai berubah
-        function onSubmissionsUpdate(snapshot) {
-            submissionsCache.clear();
-            snapshot.forEach(doc => {
-                submissionsCache.set(doc.id, doc.data());
-            });
-
-            // Jika tab rekap nilai sedang aktif, render ulang
-            if (currentEditingMaterialId && !submissionsContent.classList.contains('hidden')) {
-                renderSubmissions(currentEditingMaterialId);
-            }
-            
-            // Jika tab lembar kerja sedang aktif, render ulang
-             if (currentEditingMaterialId && !worksheetContent.classList.contains('hidden')) {
-                renderWorksheet(currentEditingMaterialId);
-            }
-        }
-        
-        // Render rekap nilai (Dosen)
-        function renderSubmissions(materialId) {
-            submissionsList.innerHTML = '';
-            submissionsLoading.classList.remove('hidden');
-            submissionsEmpty.classList.add('hidden');
-
-            const relevantSubmissions = [];
-            submissionsCache.forEach(sub => {
-                if (sub.materialId === materialId) {
-                    relevantSubmissions.push(sub);
-                }
-            });
-
-            if (relevantSubmissions.length === 0) {
-                submissionsLoading.classList.add('hidden');
-                submissionsEmpty.classList.remove('hidden');
-                return;
-            }
-
-            relevantSubmissions.sort((a, b) => a.userEmail.localeCompare(b.userEmail));
-            submissionsLoading.classList.add('hidden');
-
-            relevantSubmissions.forEach(sub => {
-                const div = document.createElement('div');
-                div.className = 'p-4 border rounded-lg flex justify-between items-center';
-                const userInfo = document.createElement('div');
-                const email = document.createElement('p');
-                email.className = 'font-medium text-gray-800';
-                email.textContent = sub.userEmail;
-                userInfo.appendChild(email);
-                const date = document.createElement('p');
-                date.className = 'text-xs text-gray-500';
-                date.textContent = `Dikerjakan: ${sub.submittedAt.toDate().toLocaleString()}`;
-                userInfo.appendChild(date);
-                div.appendChild(userInfo);
-                const score = document.createElement('div');
-                score.className = `text-2xl font-bold ${sub.score >= 70 ? 'text-green-600' : 'text-red-600'}`;
-                score.textContent = sub.score;
-                div.appendChild(score);
-                submissionsList.appendChild(div);
-            });
-        }
-        
-
-        /** 7. Inisialisasi Event Listeners */
-        
-        try {
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
-            document.getElementById('tab-worksheet').addEventListener('click', () => showTab('worksheet'));
-            document.getElementById('tab-edit').addEventListener('click', () => showTab('edit'));
-            document.getElementById('tab-submissions').addEventListener('click', () => showTab('submissions'));
-            document.getElementById('save-worksheet-btn').addEventListener('click', handleSaveWorksheet);
-            document.getElementById('edit-title-icon-btn').addEventListener('click', handleEditTitle);
-            document.getElementById('submit-worksheet-btn').addEventListener('click', handleSubmitWorksheet);
-            document.getElementById('add-material-btn').addEventListener('click', handleAddMaterial);
-        } catch (e) {
-            console.error("Gagal memasang listener:", e);
-        }
-
-        // Panggil createIcons (FIX: Panggil di DOMContentLoaded agar 'defer' selesai)
+        // 2. Listener untuk Elemen UI (Form, Tombol)
+        // Dipasang setelah DOM siap
         document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM content loaded. Attaching listeners...");
+
+            // Listener Form Login
+            loginForm.addEventListener('submit', handleLogin);
+            // Listener Tombol Logout
+            logoutButton.addEventListener('click', handleLogout);
+
+            // Listener Tombol Tambah Materi (Dosen)
+            document.getElementById('add-material-btn').addEventListener('click', handleAddMaterial);
+            // Listener Tombol Edit Judul (Ikon Pensil - Dosen)
+            editTitleBtn.addEventListener('click', handleEditTitle);
+
+            // Listener Tombol Simpan Worksheet (Dosen)
+            saveWorksheetBtn.addEventListener('click', handleSaveWorksheet);
+            // Listener Tombol Submit Kuis (Mahasiswa)
+            submitWorksheetBtn.addEventListener('click', handleSubmitWorksheet);
+
+            // Listener Navigasi Tab
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    showTab(button.dataset.tab);
+                });
+            });
+
+            // Panggil createIcons setelah DOM siap dan skrip (semoga) sudah dimuat
             try {
-                lucide.createIcons();
+                if (window.lucide) {
+                    lucide.createIcons();
+                    console.log("Lucide icons created on DOMContentLoaded.");
+                } else {
+                    console.warn("Lucide script not yet available on DOMContentLoaded.");
+                    // Coba lagi setelah delay singkat
+                    setTimeout(() => {
+                        if (window.lucide) {
+                            lucide.createIcons();
+                            console.log("Lucide icons created after delay.");
+                        } else {
+                            console.error("Gagal memuat ikon Lucide setelah delay.");
+                        }
+                    }, 500);
+                }
             } catch (e) {
                 console.error("Gagal memuat ikon Lucide:", e);
             }
         });
 
-
-        // Inisialisasi status Autentikasi
-        initAppSetup();
-
     </script>
 </body>
 
 </html>
-
-
-
-
