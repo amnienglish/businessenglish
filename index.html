@@ -7,435 +7,183 @@
     <title>Business English LMS</title>
     <!-- Muat Tailwind CSS dengan plugin typography -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-    <!-- Muat Ikon Lucide (FIX: Tambahkan 'defer' agar tidak block) -->
+    <!-- Muat Ikon Lucide -->
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
-    <!-- Muat TinyMCE (Rich Text Editor) (FIX: Tambahkan 'defer') -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"
-        referrerpolicy="origin"></script>
+    <!-- Muat TinyMCE -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
 
     <style>
         /* Style kustom untuk LMS */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Sembunyikan scrollbar untuk sidebar, tapi tetap bisa di-scroll */
-        #material-list::-webkit-scrollbar {
-            display: none;
-        }
-
-        #material-list {
-            -ms-overflow-style: none;
-            /* IE dan Edge */
-            scrollbar-width: none;
-            /* Firefox */
-        }
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Sembunyikan scrollbar sidebar */
+        #material-list::-webkit-scrollbar { display: none; }
+        #material-list { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* Loading spinner */
         .spinner {
             border-top-color: #3498db;
             animation: spin 1s linear infinite;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* --- CSS Statis untuk Firefly (Kunang-kunang) --- */
+        /* CSS Firefly */
         .firefly {
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            width: 0.4vw;
-            height: 0.4vw;
-            margin: -0.2vw 0 0 9.8vw;
-            animation: ease 200s alternate infinite;
-            pointer-events: none;
+            position: fixed; left: 50%; top: 50%; width: 0.4vw; height: 0.4vw;
+            margin: -0.2vw 0 0 9.8vw; animation: ease 200s alternate infinite; pointer-events: none;
         }
-
-        .firefly::before,
-        .firefly::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            transform-origin: -10vw;
+        .firefly::before, .firefly::after {
+            content: ''; position: absolute; width: 100%; height: 100%;
+            border-radius: 50%; transform-origin: -10vw;
         }
-
         .firefly::before {
-            background: black;
-            opacity: 0.4;
-            animation: drift ease alternate infinite;
+            background: black; opacity: 0.4; animation: drift ease alternate infinite;
         }
-
         .firefly::after {
-            background: white;
-            opacity: 0;
-            box-shadow: 0 0 0vw 0vw yellow;
+            background: white; opacity: 0; box-shadow: 0 0 0vw 0vw yellow;
             animation: drift ease alternate infinite, flash ease infinite;
         }
-
-        @keyframes drift {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes flash {
-
-            0%,
-            30%,
-            100% {
-                opacity: 0;
-                box-shadow: 0 0 0vw 0vw yellow;
-            }
-
-            5% {
-                opacity: 1;
-                box-shadow: 0 0 2vw 0.4vw yellow;
-            }
-        }
+        @keyframes drift { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes flash { 0%, 30%, 100% { opacity: 0; box-shadow: 0 0 0vw 0vw yellow; } 5% { opacity: 1; box-shadow: 0 0 2vw 0.4vw yellow; } }
     </style>
 </head>
 
 <body class="bg-gray-100 antialiased">
 
-    <!-- Kontainer Aplikasi Utama -->
+    <!-- Kontainer Aplikasi -->
     <div id="app-container" class="h-screen w-screen flex">
 
-        <!-- 1. Halaman Login (Awalnya terlihat) -->
-        <!-- 
-          PERUBAHAN: 
-          - Hapus 'bg-gray-50'
-          - Tambah 'relative overflow-hidden'
-          - Tambah style background-image
-          - Tambah elemen firefly
-          - Tambah 'z-10' ke kartu login
-        -->
-        <div id="login-screen"
-            class="w-full h-full flex items-center justify-center relative overflow-hidden"
+        <!-- 1. Halaman Login -->
+        <div id="login-screen" class="w-full h-full flex items-center justify-center relative overflow-hidden"
             style="background-image: url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg-Rtlv_IEgPoAzdKbnoL4sCLTgm8ZwsOBNy_GvPLHBBCLdnz-RidUVPapxKT8-0YUgDtTizkzD-On909KnXPMr0N7_-oBfBQiRdpuWWdy8qN2x1yZFrLw001DSnE21ru11Gv80jxiG7ozhATxDI_yRDNabUp1Bb4BRhnmljUr4D8l1HtlxA5p84pDDwmFD/s5803/anime-night-sky-illustration.jpg'); background-size: cover; background-position: center;">
+            
+            <!-- Fireflies -->
+            <div class="firefly"></div><div class="firefly"></div><div class="firefly"></div><div class="firefly"></div><div class="firefly"></div>
+            <div class="firefly"></div><div class="firefly"></div><div class="firefly"></div><div class="firefly"></div><div class="firefly"></div>
+            <div class="firefly"></div><div class="firefly"></div><div class="firefly"></div><div class="firefly"></div><div class="firefly"></div>
 
-            <!-- Elemen Firefly (15) -->
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-            <div class="firefly"></div>
-
-            <!-- Kartu Login (Tambah z-10 agar di atas firefly) -->
-            <div class="w-full max-w-md p-8 bg-white/3 backdrop-blur-md rounded-xl shadow-lg border border-white/20 z-10">
+            <div class="w-full max-w-md p-8 bg-white/10 backdrop-blur-md rounded-xl shadow-lg border border-white/20 z-10">
                 <h2 class="text-3xl font-bold text-center text-white mb-2">Business English LMS</h2>
                 <p class="text-center text-gray-200 mb-8">Silakan login untuk melanjutkan</p>
-
-                <div id="login-error" class="hidden text-red-600 bg-red-50 p-3 rounded-lg text-sm mb-4"></div>
-
+                <div id="login-error" class="hidden text-red-600 bg-red-100 p-3 rounded-lg text-sm mb-4"></div>
                 <form id="login-form">
                     <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-gray-200 mb-1">Email</label>
-                        <input type="email" id="email"
-                            class="w-full px-4 py-2 bg-transparent border border-gray-400 rounded-lg text-white placeholder-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="cth: xxxx@email.com" required>
+                        <label class="block text-sm font-medium text-gray-200 mb-1">Email</label>
+                        <input type="email" id="email" class="w-full px-4 py-2 bg-transparent border border-gray-400 rounded-lg text-white placeholder-gray-300 focus:ring-blue-500" placeholder="email@contoh.com" required>
                     </div>
                     <div class="mb-6">
-                        <label for="password" class="block text-sm font-medium text-gray-200 mb-1">Password</label>
-                        <input type="password" id="password"
-                            class="w-full px-4 py-2 bg-transparent border border-gray-400 rounded-lg text-white placeholder-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="••••••••" required>
+                        <label class="block text-sm font-medium text-gray-200 mb-1">Password</label>
+                        <input type="password" id="password" class="w-full px-4 py-2 bg-transparent border border-gray-400 rounded-lg text-white placeholder-gray-300 focus:ring-blue-500" placeholder="••••••••" required>
                     </div>
-                    <button type="submit" id="login-button"
-                        class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
-                        Login
-                    </button>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Login</button>
                 </form>
             </div>
         </div>
 
-        <!-- 2. Halaman Dashboard (Awalnya tersembunyi) -->
+        <!-- 2. Dashboard -->
         <div id="dashboard-screen" class="hidden w-full h-full flex">
-            <!-- Sidebar (Daftar Materi) -->
+            <!-- Sidebar -->
             <div class="w-1/4 max-w-xs h-full bg-white border-r border-gray-200 flex flex-col shadow-sm">
-                <!-- Header Sidebar -->
                 <div class="p-4 border-b border-gray-200">
                     <h1 class="text-xl font-bold text-gray-800">Materi Kuliah</h1>
-                    <p id="user-role-display" class="text-sm text-gray-500">Role: <span
-                            class="font-medium text-gray-700"></span></p>
+                    <p id="user-role-display" class="text-sm text-gray-500">Role: <span class="font-medium text-gray-700"></span></p>
                 </div>
-
-                <!-- Kontainer Tombol Tambah Materi (Hanya Dosen) -->
                 <div id="add-material-container" class="hidden p-4 border-b border-gray-200">
-                    <button id="add-material-btn"
-                        class="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 transition">
-                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                        Tambah Materi Baru
+                    <button id="add-material-btn" class="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 transition">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah Materi
                     </button>
                 </div>
-
-                <!-- Daftar Materi (Bisa di-scroll) -->
-                <div id="material-list" class="flex-1 overflow-y-auto p-2">
-                    <!-- Materi akan di-render oleh JS di sini -->
-                    <!-- Contoh item:
-                    <button class="w-full text-left px-4 py-3 mb-1 rounded-lg hover:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-700 font-medium">
-                        Pertemuan 1: Introduction
-                    </button>
-                    -->
-                </div>
-
-                <!-- Footer Sidebar (Info User & Logout) -->
+                <div id="material-list" class="flex-1 overflow-y-auto p-2"></div>
                 <div class="p-4 border-t border-gray-200 mt-auto">
                     <div class="mb-3">
                         <p class="text-xs text-gray-500">Login sebagai:</p>
-                        <p id="user-email-display" class="text-sm font-medium text-gray-800 truncate"
-                            title="user@example.com"></p>
+                        <p id="user-email-display" class="text-sm font-medium text-gray-800 truncate"></p>
                     </div>
-                    <button id="logout-button"
-                        class="w-full flex items-center justify-center gap-2 text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg hover:bg-red-100 transition">
-                        <i data-lucide="log-out" class="w-4 h-4"></i>
-                        Logout
+                    <button id="logout-button" class="w-full flex items-center justify-center gap-2 text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg hover:bg-red-100 transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Logout
                     </button>
                 </div>
             </div>
 
-            <!-- Konten Utama (Detail Materi) -->
+            <!-- Konten Utama -->
             <div class="w-3/4 flex-1 h-full bg-gray-50 flex flex-col">
-                <!-- Header Konten Utama -->
                 <div class="p-5 border-b border-gray-200 bg-white shadow-sm">
-                    <!-- Judul Materi dan Ikon Edit Judul (Dosen) -->
                     <div class="flex items-center gap-2">
-                        <h2 id="material-title" class="text-2xl font-bold text-gray-800">
-                            Pilih materi dari daftar di sebelah kiri
-                        </h2>
-                        <!-- Ikon Edit Judul (Hanya Dosen) -->
-                        <button id="edit-title-btn"
-                            class="hidden text-gray-400 hover:text-blue-600 transition p-1 rounded-md">
-                            <i data-lucide="pencil" class="w-5 h-5"></i>
-                        </button>
+                        <h2 id="material-title" class="text-2xl font-bold text-gray-800">Pilih materi dari daftar</h2>
+                        <button id="edit-title-btn" class="hidden text-gray-400 hover:text-blue-600 transition p-1 rounded-md"><i data-lucide="pencil" class="w-5 h-5"></i></button>
                     </div>
-
-                    <!-- Navigasi Tab (Lembar Kerja, Edit, Rekap) -->
                     <div id="material-tabs" class="hidden mt-4 border-b border-gray-200">
                         <nav class="flex -mb-px space-x-6">
-                            <button data-tab="worksheet"
-                                class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Lembar Kerja
-                            </button>
-                            <!-- Tab Mahasiswa (BARU) -->
-                            <button data-tab="student-recap"
-                                class="tab-button tab-button-mahasiswa hidden whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Rekap Nilai Saya
-                            </button>
-                            <!-- Tab Dosen -->
-                            <button data-tab="edit"
-                                class="tab-button tab-button-dosen hidden whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Edit Worksheet
-                            </button>
-                            <button data-tab="recap"
-                                class="tab-button tab-button-dosen hidden whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Rekap Nilai
-                            </button>
+                            <button data-tab="worksheet" class="tab-button border-b-2 font-medium text-sm py-3 px-1 border-transparent text-gray-500 hover:text-gray-700">Lembar Kerja</button>
+                            <button data-tab="student-recap" class="tab-button tab-button-mahasiswa hidden border-b-2 font-medium text-sm py-3 px-1 border-transparent text-gray-500 hover:text-gray-700">Rekap Nilai Saya</button>
+                            <button data-tab="edit" class="tab-button tab-button-dosen hidden border-b-2 font-medium text-sm py-3 px-1 border-transparent text-gray-500 hover:text-gray-700">Edit Worksheet</button>
+                            <button data-tab="recap" class="tab-button tab-button-dosen hidden border-b-2 font-medium text-sm py-3 px-1 border-transparent text-gray-500 hover:text-gray-700">Rekap Nilai & Tugas</button>
                         </nav>
                     </div>
                 </div>
 
-                <!-- Area Konten Tab (Bisa di-scroll) -->
                 <div class="flex-1 overflow-y-auto p-6">
+                    <!-- FIX: ID di sini harus 'worksheet-content' agar sesuai dengan JS -->
                     <div id="worksheet-content" class="max-w-3xl mx-auto">
+                        <div id="worksheet-loading" class="hidden text-center py-10"><div class="spinner w-12 h-12 rounded-full border-4 border-gray-200 border-t-blue-500 mx-auto"></div><p class="mt-4 text-gray-500">Memuat...</p></div>
+                        <div id="worksheet-empty" class="text-center py-20"><i data-lucide="book-open" class="w-16 h-16 text-gray-300 mx-auto"></i><p class="mt-4 text-gray-500">Materi yang dipilih akan tampil di sini.</p></div>
 
-                        <!-- State: Loading -->
-                        <div id="worksheet-loading" class="hidden text-center py-10">
-                            <div class="spinner w-12 h-12 rounded-full border-4 border-gray-200 border-t-blue-500 mx-auto">
-                            </div>
-                            <p class="mt-4 text-gray-500">Memuat materi...</p>
-                        </div>
-
-                        <!-- State: Belum memilih materi -->
-                        <div id="worksheet-empty" class="text-center py-20">
-                            <i data-lucide="book-open" class="w-16 h-16 text-gray-300 mx-auto"></i>
-                            <p class="mt-4 text-gray-500">Materi yang dipilih akan tampil di sini.</p>
-                        </div>
-
-                        <!-- 
-                          Konten Tab: Lembar Kerja (Mahasiswa & Dosen)
-                          FIX: `worksheet-reading-content` sekarang terpisah dan dikelola visibilitasnya oleh JS.
-                        -->
+                        <!-- Tab: Lembar Kerja -->
                         <div id="worksheet-details" class="hidden">
-                            <!-- Link eBook (Jika ada) -->
-                            <div id="ebook-link-container" class="hidden mb-6">
-                                <a id="ebook-link" href="#" target="_blank"
-                                    class="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-sm">
-                                    <i data-lucide="book-marked" class="w-5 h-5"></i>
-                                    Buka Materi eBook
-                                </a>
+                            <div id="ebook-link-container" class="hidden mb-6"><a id="ebook-link" href="#" target="_blank" class="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-indigo-700"><i data-lucide="book-marked" class="w-5 h-5"></i> Buka Materi eBook</a></div>
+                            <div id="worksheet-reading-content" class="hidden prose prose-lg max-w-none bg-white p-6 rounded-lg border border-gray-200 mb-6"></div>
+                            <div id="worksheet-form-container" class="hidden"></div>
+                            <div id="task-submission-container" class="hidden mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-2">Pengumpulan Tugas</h3>
+                                <p class="text-sm text-blue-600 mb-4">Upload ke Google Drive (publik), tempel link di sini.</p>
+                                <input type="url" id="task-url-input" class="w-full px-4 py-2 border rounded-lg" placeholder="https://docs.google.com/...">
                             </div>
-
-                            <!-- Konten Materi Bacaan (Rich Text / HTML) -->
-                            <div id="worksheet-reading-content"
-                                class="hidden prose prose-lg max-w-none bg-white p-6 rounded-lg border border-gray-200 mb-6">
-                                <!-- Konten Rich Text (HTML) akan di-render di sini -->
-                            </div>
-
-                            <!-- Konten Form Kuis -->
-                            <div id="worksheet-form-container" class="hidden">
-                                <!-- Soal akan di-render di sini -->
-                            </div>
-                            <button id="submit-worksheet-btn"
-                                class="hidden mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-                                Simpan Jawaban
-                            </button>
-
-                            <!-- KARTU SKOR (BARU) - Ditampilkan setelah kuis disimpan -->
-                            <div id="worksheet-score-card"
-                                class="hidden text-center p-8 bg-green-50 rounded-lg border border-green-200 mt-6">
+                            <button id="submit-worksheet-btn" class="hidden mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Simpan Jawaban & Tugas</button>
+                            <div id="worksheet-score-card" class="hidden text-center p-8 bg-green-50 rounded-lg border border-green-200 mt-6">
                                 <i data-lucide="check-circle" class="h-16 w-16 text-green-500 mx-auto mb-4"></i>
-                                <h3 class="text-2xl font-bold text-gray-800 mb-2">Kuis Telah Disimpan!</h3>
-                                <p class="text-lg text-gray-600 mb-4">Skor Anda:</p>
-                                <p id="score-card-text" class="text-6xl font-bold text-green-600">0</p>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2">Jawaban Tersimpan!</h3>
+                                <div id="score-display-container"><p class="text-lg text-gray-600 mb-4">Skor Kuis:</p><p id="score-card-text" class="text-6xl font-bold text-green-600">0</p></div>
+                                <div id="task-submitted-msg" class="hidden mt-4 text-blue-700 font-medium"></div>
                             </div>
                         </div>
 
-
-                        <!-- Konten Tab: Edit Worksheet (Dosen) - DIPERBARUI -->
+                        <!-- Tab: Edit (Dosen) -->
                         <div id="edit-content" class="hidden">
-                            <!-- Input Link eBook -->
-                            <div class="mb-6">
-                                <label for="ebook-url-input" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Link eBook (Opsional)
-                                </label>
-                                <input type="url" id="ebook-url-input"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="https://drive.google.com/...">
-                                <p class="text-xs text-gray-500 mt-1">Tempel link materi (Google Drive, PDF, dll).</p>
-                            </div>
-
-                            <!-- Editor Materi Bacaan (Rich Text) -->
-                            <div class="mb-6">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    Materi Bacaan (Rich Text Editor)
-                                </label>
-                                <textarea id="reading-content-editor" class="w-full h-64"></textarea>
-                                <p class="text-xs text-gray-500 mt-1">Tulis materi bacaan (teks, list, tabel) di sini.
-                                </p>
-                            </div>
-
-                            <!-- Editor Kuis (JSON) -->
-                            <div>
-                                <label for="worksheet-json-input"
-                                    class="block text-sm font-medium text-gray-700 mb-1">
-                                    Kuis (Format JSON)
-                                </label>
-                                <textarea id="worksheet-json-input"
-                                    class="w-full h-96 p-4 border border-gray-300 rounded-lg font-mono text-sm bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder='{ "questions": [ ... ] }'></textarea>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    Tempel (paste) kode JSON untuk kuis (Pilihan Ganda / Isian).
-                                </p>
-                            </div>
-
-                            <button id="save-worksheet-btn"
-                                class="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition">
-                                Simpan Perubahan
-                                </button>
+                            <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-1">Link eBook</label><input type="url" id="ebook-url-input" class="w-full px-4 py-2 border rounded-lg"></div>
+                            <div class="mb-6 flex items-center p-4 bg-gray-50 border rounded-lg"><input type="checkbox" id="enable-task-submission" class="w-5 h-5 text-blue-600"><label for="enable-task-submission" class="ml-3 block text-sm font-medium text-gray-700">Wajibkan Tugas</label></div>
+                            <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-1">Materi Bacaan</label><textarea id="reading-content-editor" class="w-full h-64"></textarea></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Kuis (JSON)</label><textarea id="worksheet-json-input" class="w-full h-96 p-4 border rounded-lg font-mono text-sm bg-gray-50"></textarea></div>
+                            <button id="save-worksheet-btn" class="mt-6 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700">Simpan Perubahan</button>
                         </div>
 
-                        <!-- Konten Tab: Rekap Nilai (Dosen) -->
+                        <!-- Tab: Rekap (Dosen) -->
                         <div id="recap-content" class="hidden">
-                            <h3 class="text-xl font-semibold mb-4 text-gray-800">Rekap Nilai: <span
-                                    id="recap-material-title"></span></h3>
-                            <div id="recap-loading" class="hidden text-gray-500">Memuat rekap...</div>
-                            <div id="recap-no-data" class="hidden text-gray-500">Belum ada mahasiswa yang mengerjakan.
-                            </div>
-                            <table id="recap-table" class="hidden min-w-full bg-white rounded-lg shadow overflow-hidden">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Nama Mahasiswa</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Email</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Skor</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Waktu Mengerjakan</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recap-table-body" class="divide-y divide-gray-200">
-                                    <!-- Data rekap akan di-render oleh JS di sini -->
-                                </tbody>
-                            </table>
+                            <h3 class="text-xl font-semibold mb-4">Rekap Nilai: <span id="recap-material-title"></span></h3>
+                            <div id="recap-loading" class="hidden text-gray-500">Memuat...</div>
+                            <div id="recap-no-data" class="hidden text-gray-500">Belum ada data.</div>
+                            <div class="overflow-x-auto"><table id="recap-table" class="hidden min-w-full bg-white rounded-lg shadow"><thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Skor</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Link</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th></tr></thead><tbody id="recap-table-body" class="divide-y divide-gray-200"></tbody></table></div>
                         </div>
 
-                        <!-- Konten Tab: Rekap Nilai Mahasiswa (BARU) -->
+                        <!-- Tab: Rekap Mahasiswa -->
                         <div id="student-recap-content" class="hidden">
-                            <h3 class="text-xl font-semibold mb-4 text-gray-800">Rekap Nilai Anda</h3>
-                            <div id="student-recap-loading" class="hidden text-gray-500">Memuat rekap...</div>
-                            <div id="student-recap-no-data" class="hidden text-gray-500">Anda belum mengerjakan kuis
-                                apapun.</div>
-                            <table id="student-recap-table"
-                                class="hidden min-w-full bg-white rounded-lg shadow overflow-hidden">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Materi</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Skor</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Waktu Mengerjakan</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="student-recap-table-body" class="divide-y divide-gray-200">
-                                    <!-- Data rekap akan di-render oleh JS di sini -->
-                                </tbody>
-                            </table>
+                            <h3 class="text-xl font-semibold mb-4">Rekap Nilai Anda</h3>
+                            <div id="student-recap-loading" class="hidden text-gray-500">Memuat...</div>
+                            <div id="student-recap-no-data" class="hidden text-gray-500">Belum ada data.</div>
+                            <div class="overflow-x-auto"><table id="student-recap-table" class="hidden min-w-full bg-white rounded-lg shadow"><thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Materi</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Skor</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th></tr></thead><tbody id="student-recap-table-body" class="divide-y divide-gray-200"></tbody></table></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Notifikasi Toast -->
-        <div id="toast-notification"
-            class="hidden fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white transition-transform translate-y-16 opacity-0 duration-300">
-            <span id="toast-message"></span>
-        </div>
+        <div id="toast-notification" class="hidden fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white transition-transform translate-y-16 opacity-0 duration-300"><span id="toast-message"></span></div>
     </div>
 
-
-    <!-- =============================================== -->
-    <!-- MODUL JAVASCRIPT DAN FIREBASE -->
-    <!-- =============================================== -->
     <script type="module">
-        // Impor fungsi Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import {
-            getFirestore, doc, getDoc, addDoc, setDoc, updateDoc,
-            onSnapshot, collection, query, where, getDocs, setLogLevel
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- KONFIGURASI FIREBASE ---
+        // --- KONFIGURASI ---
         const firebaseConfig = {
             apiKey: "AIzaSyCuxnDKTGfelPzVtmUgk0txMOiV8Z-fG8A",
             authDomain: "business-english-34e6b.firebaseapp.com",
@@ -446,1280 +194,442 @@
             measurementId: "G-6C7K6LKWP8"
         };
 
-        // --- Inisialisasi Firebase ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        setLogLevel('Debug'); // Aktifkan log debug Firestore
 
-        // --- Path Koleksi ---
-        // Kita gunakan koleksi root agar mudah di-debug
-        const materialsColPath = "materials";
-        const submissionsColPath = "submissions";
-        const usersColPath = "users"; // Koleksi untuk menyimpan nama mahasiswa
-
-        // --- Variabel Global & State ---
-        let userRole = null; // 'mahasiswa' atau 'dosen'
+        // --- STATE ---
+        let userRole = null;
         let currentUserId = null;
-        let currentUserEmail = null;
         let currentEditingMaterialId = null;
-        let materialsCache = new Map(); // Cache untuk data materi
-        let submissionsCache = new Map(); // Cache untuk data nilai
-        let usersCache = new Map(); // Cache untuk data nama mahasiswa
+        let materialsCache = new Map();
+        let submissionsCache = new Map();
+        let usersCache = new Map();
 
-        // --- Elemen DOM ---
-        // Layar
-        const loginScreen = document.getElementById('login-screen');
-        const dashboardScreen = document.getElementById('dashboard-screen');
-        // Form Login
-        const loginForm = document.getElementById('login-form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginError = document.getElementById('login-error');
-        // Sidebar
-        const materialList = document.getElementById('material-list');
-        const userRoleDisplay = document.getElementById('user-role-display').querySelector('span');
-        const userEmailDisplay = document.getElementById('user-email-display');
-        const logoutButton = document.getElementById('logout-button');
-        const addMaterialContainer = document.getElementById('add-material-container');
-        // Konten Utama
-        const materialTitle = document.getElementById('material-title');
-        const editTitleBtn = document.getElementById('edit-title-btn');
-        const materialTabs = document.getElementById('material-tabs');
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabButtonsDosen = document.querySelectorAll('.tab-button-dosen');
-        const tabButtonsMahasiswa = document.querySelectorAll('.tab-button-mahasiswa'); // BARU
-        // Kontainer Tab
-        const worksheetContent = document.getElementById('worksheet-content');
-        const editContent = document.getElementById('edit-content');
-        const recapContent = document.getElementById('recap-content');
-        const studentRecapContent = document.getElementById('student-recap-content'); // BARU
-        // Detail Lembar Kerja
-        const worksheetDetails = document.getElementById('worksheet-details');
-        const worksheetLoading = document.getElementById('worksheet-loading');
-        const worksheetEmpty = document.getElementById('worksheet-empty');
-        const ebookLinkContainer = document.getElementById('ebook-link-container');
-        const ebookLink = document.getElementById('ebook-link');
-        const worksheetReadingContent = document.getElementById('worksheet-reading-content');
-        const worksheetFormContainer = document.getElementById('worksheet-form-container');
-        const submitWorksheetBtn = document.getElementById('submit-worksheet-btn');
-        const scoreCard = document.getElementById('worksheet-score-card');
-        const scoreCardText = document.getElementById('score-card-text');
-        // Detail Edit
-        const ebookUrlInput = document.getElementById('ebook-url-input');
-        const readingContentEditor = document.getElementById('reading-content-editor');
-        const worksheetJsonInput = document.getElementById('worksheet-json-input');
-        const saveWorksheetBtn = document.getElementById('save-worksheet-btn');
-        // Detail Rekap
-        const recapMaterialTitle = document.getElementById('recap-material-title');
-        const recapLoading = document.getElementById('recap-loading');
-        const recapNoData = document.getElementById('recap-no-data');
-        const recapTable = document.getElementById('recap-table');
-        const recapTableBody = document.getElementById('recap-table-body');
-        // Detail Rekap Mahasiswa (BARU)
-        const studentRecapLoading = document.getElementById('student-recap-loading');
-        const studentRecapNoData = document.getElementById('student-recap-no-data');
-        const studentRecapTable = document.getElementById('student-recap-table');
-        const studentRecapTableBody = document.getElementById('student-recap-table-body');
-        // Notifikasi
-        const toast = document.getElementById('toast-notification');
-        const toastMessage = document.getElementById('toast-message');
+        // --- HELPERS ---
+        function showMessage(msg, type='success') {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').textContent = msg;
+            toast.className = `fixed bottom-5 right-5 p-4 rounded-lg shadow-lg text-white transition-transform duration-300 translate-y-0 opacity-100 ${type==='success'?'bg-green-600':'bg-red-600'}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.add('translate-y-16', 'opacity-0'); setTimeout(()=>toast.classList.add('hidden'),300); }, 3000);
+        }
 
-        // ===============================================
-        // FUNGSI UTAMA APLIKASI
-        // ===============================================
-
-        /**
-         * (FUNGSI BARU)
-         * Menerjemahkan SASS loop ke JS untuk membuat animasi acak.
-         */
         function createFireflyAnimations() {
-            const quantity = 15;
-            let cssString = '';
-
-            for (let i = 1; i <= quantity; i++) {
-                const steps = Math.floor(Math.random() * 12) + 16;
-                const rotationSpeed = (Math.random() * 10 + 8).toFixed(2) + 's';
-                const flashDuration = (Math.floor(Math.random() * 6000) + 5000) + 'ms';
-                const flashDelay = (Math.floor(Math.random() * 8000) + 500) + 'ms';
-
-                // Terapkan animasi ke nth-child
-                cssString += `
-                    .firefly:nth-child(${i}) { animation-name: move${i}; }
-                    .firefly:nth-child(${i})::before { animation-duration: ${rotationSpeed}; }
-                    .firefly:nth-child(${i})::after { 
-                        animation-duration: ${rotationSpeed}, ${flashDuration}; 
-                        animation-delay: 0ms, ${flashDelay}; 
-                    }
-                `;
-
-                // Buat keyframe acak
-                cssString += `@keyframes move${i} {`;
-                for (let step = 0; step <= steps; step++) {
-                    const percent = (step * (100 / steps)).toFixed(0);
-                    const transform = `translateX(${(Math.random() * 100 - 50).toFixed(2)}vw) translateY(${(Math.random() * 100 - 50).toFixed(2)}vh) scale(${(Math.random() * 0.75 + 0.25).toFixed(2)})`;
-                    cssString += `${percent}% { transform: ${transform}; }`;
-                }
-                cssString += `}`;
+            let css = '';
+            for(let i=1; i<=15; i++) {
+                const dur = (Math.random()*10+8).toFixed(2)+'s';
+                css += `.firefly:nth-child(${i}) { animation-name: move${i}; } .firefly:nth-child(${i})::before { animation-duration: ${dur}; }`;
+                css += `@keyframes move${i} { 0% { transform: translateX(${(Math.random()*100-50).toFixed(0)}vw) translateY(${(Math.random()*100-50).toFixed(0)}vh) scale(${Math.random()}); } 100% { transform: translateX(${(Math.random()*100-50).toFixed(0)}vw) translateY(${(Math.random()*100-50).toFixed(0)}vh) scale(${Math.random()}); } }`;
             }
-
-            // Suntikkan CSS dinamis ke head
-            const styleEl = document.createElement('style');
-            styleEl.innerHTML = cssString;
-            document.head.appendChild(styleEl);
-            console.log("Firefly animations created.");
+            const s = document.createElement('style'); s.innerHTML = css; document.head.appendChild(s);
         }
 
-        /**
-         * Menampilkan notifikasi toast.
-         * @param {string} message - Pesan yang ingin ditampilkan.
-         * @param {'success' | 'error'} type - Tipe notifikasi.
-         */
-        function showMessage(message, type = 'success') {
-            toastMessage.textContent = message;
-            if (type === 'success') {
-                toast.classList.remove('bg-red-500');
-                toast.classList.add('bg-green-500');
-            } else {
-                toast.classList.remove('bg-green-500');
-                toast.classList.add('bg-red-500');
-            }
-
-            toast.classList.remove('hidden', 'translate-y-16', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-16', 'opacity-0');
-                setTimeout(() => toast.classList.add('hidden'), 300);
-            }, 3000);
-        }
-
-        /**
-         * Fungsi untuk mereset UI ke state awal (saat logout atau ganti materi).
-         */
-        function resetUI() {
-            console.log("Resetting UI...");
-            // Reset state
-            currentEditingMaterialId = null;
-            userRole = null;
-            currentUserId = null;
-            currentUserEmail = null;
-            materialsCache.clear();
-            submissionsCache.clear();
-            usersCache.clear();
-
-            // Sembunyikan dashboard, tampilkan login
-            loginScreen.classList.remove('hidden');
-            dashboardScreen.classList.add('hidden');
-
-            // Kosongkan daftar materi
-            materialList.innerHTML = '';
-            // Reset judul
-            materialTitle.textContent = 'Pilih materi dari daftar di sebelah kiri';
-            editTitleBtn.classList.add('hidden');
-            // Sembunyikan tab
-            materialTabs.classList.add('hidden');
-            // Sembunyikan semua konten tab
-            worksheetContent.classList.remove('hidden');
-            worksheetDetails.classList.add('hidden');
-            editContent.classList.add('hidden');
-            recapContent.classList.add('hidden');
-            // Tampilkan state empty
-            worksheetLoading.classList.add('hidden');
-            worksheetEmpty.classList.remove('hidden');
-            // Reset form login
-            loginForm.reset();
-            loginError.classList.add('hidden');
-        }
-
-        /**
-         * Menangani proses login.
-         */
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            loginError.classList.add('hidden');
-            loginError.textContent = '';
-
-            try {
-                // Login menggunakan Firebase Auth
-                await signInWithEmailAndPassword(auth, email, password);
-                // Status login akan ditangani oleh onAuthStateChanged
-                showMessage("Login berhasil!", "success");
-            } catch (error) {
-                console.error("Login Gagal:", error.code, error.message);
-                if (error.code === 'auth/network-request-failed') {
-                    loginError.textContent = 'Login Gagal: Tidak dapat terhubung ke server. (Pastikan domain scf.usercontent.goog sudah di-whitelist di Firebase Auth)';
-                    console.error("Firebase Auth Error: auth/network-request-failed. Ini BUKAN error kode, tapi masalah konfigurasi Firebase. Domain 'scf.usercontent.goog' (atau domain preview ini) HARUS ditambahkan ke 'Authorized domains' di Firebase Authentication -> Settings.");
-                } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                    loginError.textContent = 'Email atau password salah. Silakan coba lagi.';
-                } else {
-                    loginError.textContent = `Login Gagal: ${error.message}`;
-                }
-                loginError.classList.remove('hidden');
-            }
-        }
-
-        /**
-         * Menangani proses logout.
-         */
-        async function handleLogout() {
-            try {
-                await signOut(auth);
-                // Status logout akan ditangani oleh onAuthStateChanged
-                resetUI();
-                showMessage("Logout berhasil.", "success");
-            } catch (error) {
-                console.error("Logout Gagal:", error);
-                showMessage("Logout gagal, silakan coba lagi.", "error");
-            }
-        }
-
-        /**
-         * Mendeteksi peran (role) pengguna berdasarkan email.
-         * @param {string} email - Email pengguna.
-         * @returns {'dosen' | 'mahasiswa'} - Peran pengguna.
-         */
-        function detectUserRole(email) {
-            if (!email) return 'mahasiswa';
-            // Asumsi: email dosen mengandung kata 'dosen' atau 'guru'
-            if (email.includes('dosen') || email.includes('guru')) {
-                return 'dosen';
-            }
-            return 'mahasiswa';
-        }
-
-        /**
-         * Mendapatkan nama tampilan (Display Name) untuk mahasiswa.
-         * @param {string} email - Email mahasiswa.
-         * @returns {string} - Nama tampilan (cth: "Mahasiswa A").
-         */
-        function getStudentDisplayName(email) {
-            if (email.includes('mahasiswa.a')) return 'Mahasiswa A';
-            if (email.includes('mahasiswa.b')) return 'Mahasiswa B';
-            if (email.includes('mahasiswa.c')) return 'Mahasiswa C';
-
-            // --- TAMBAHAN BARU ---
-            if (email.includes('240508007@elearning.com')) return 'YOPIG MERZI PRASTIKO';
-            if (email.includes('240508003@elearning.com')) return 'M. FAJAR RAHINO';
-            if (email.includes('240508005@elearning.com')) return 'Moses Angga Tambunan';
-            // --- AKHIR TAMBAHAN ---
-
-            // Default jika polanya tidak cocok
+        function getStudentName(email) {
+            if (email.includes('240508007')) return 'YOPIG MERZI PRASTIKO';
+            if (email.includes('240508003')) return 'M. FAJAR RAHINO';
+            if (email.includes('240508005')) return 'Moses Angga Tambunan';
             return email.split('@')[0];
         }
 
-        /**
-         * Menyimpan/Memperbarui nama pengguna di Firestore.
-         */
-        async function saveUserData(uid, email, role) {
+        // --- CORE FUNCTIONS ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
             try {
-                const userDocRef = doc(db, usersColPath, uid);
-                let displayName;
-
-                if (role === 'mahasiswa') {
-                    displayName = getStudentDisplayName(email);
-                } else {
-                    displayName = email.split('@')[0]; // Nama default untuk dosen
-                }
-
-                await setDoc(userDocRef, {
-                    email: email,
-                    role: role,
-                    displayName: displayName
-                }, { merge: true });
-
-                console.log("User data saved/updated:", uid, displayName);
-            } catch (error) {
-                console.error("Error saving user data:", error);
+                await signInWithEmailAndPassword(auth, email, pass);
+                // onAuthStateChanged will handle UI
+            } catch (err) {
+                const errBox = document.getElementById('login-error');
+                errBox.classList.remove('hidden');
+                if (err.code === 'auth/network-request-failed') errBox.textContent = "Gagal koneksi. Cek internet/firewall.";
+                else errBox.textContent = "Email/Password salah.";
             }
         }
 
-        /**
-         * Inisialisasi listener onSnapshot (real-time).
-         * Dipanggil setelah login berhasil.
-         */
-        function initAppSetup(uid, role) {
-            console.log("Initializing app setup for user:", uid, "Role:", role);
+        async function handleLogout() {
+            await signOut(auth);
+            window.location.reload();
+        }
 
-            // 1. Setup UI berdasarkan Peran
-            userRoleDisplay.textContent = role;
-            if (role === 'dosen') {
-                addMaterialContainer.classList.remove('hidden');
-                tabButtonsDosen.forEach(btn => btn.classList.remove('hidden'));
-                tabButtonsMahasiswa.forEach(btn => btn.classList.add('hidden')); // Sembunyikan tab mhs
-            } else {
-                addMaterialContainer.classList.add('hidden');
-                tabButtonsDosen.forEach(btn => btn.classList.add('hidden'));
-                tabButtonsMahasiswa.forEach(btn => btn.classList.remove('hidden')); // Tampilkan tab mhs
-            }
+        async function saveUserData(user) {
+            try {
+                const role = (user.email.includes('dosen') || user.email.includes('guru')) ? 'dosen' : 'mahasiswa';
+                const name = (role === 'mahasiswa') ? getStudentName(user.email) : user.email.split('@')[0];
+                await setDoc(doc(db, "users", user.uid), { email: user.email, role, displayName: name }, { merge: true });
+                return role;
+            } catch (e) { console.warn("Save user fail:", e); return 'mahasiswa'; }
+        }
 
-            // 2. Listener untuk Data Pengguna (Nama Mahasiswa)
-            const usersQuery = query(collection(db, usersColPath));
-            onSnapshot(usersQuery, (querySnapshot) => {
-                console.log("Received users snapshot.");
-                usersCache.clear();
-                querySnapshot.forEach((doc) => {
-                    usersCache.set(doc.id, doc.data());
+        // --- DATA LISTENERS ---
+        function setupListeners(uid, role) {
+            // Materials
+            onSnapshot(query(collection(db, "materials")), (snap) => {
+                materialsCache.clear();
+                const mats = [];
+                snap.forEach(d => { const m={id:d.id, ...d.data()}; mats.push(m); materialsCache.set(d.id, m); });
+                
+                // PERBAIKAN PENGURUTAN (SORTING)
+                mats.sort((a, b) => {
+                    // Fungsi pembantu untuk mendapatkan angka urutan
+                    const getOrder = (item) => {
+                        // 1. Jika ada field 'order', gunakan itu
+                        if (item.order !== undefined && item.order !== null) {
+                            return item.order;
+                        }
+                        // 2. Jika tidak, coba cari angka pertama di dalam judul (misal: "Pertemuan 10" -> 10)
+                        const match = item.title.match(/(\d+)/);
+                        if (match) {
+                            return parseInt(match[0], 10);
+                        }
+                        // 3. Jika tidak ada angka, taruh di paling bawah
+                        return 999;
+                    };
+
+                    return getOrder(a) - getOrder(b);
                 });
-                console.log("Users cache updated:", usersCache);
-                // Jika sedang di tab rekap, perbarui
-                if (currentEditingMaterialId && recapContent.style.display !== 'none') {
-                    renderRecapTab(currentEditingMaterialId);
+                
+                const list = document.getElementById('material-list');
+                list.innerHTML = '';
+                mats.forEach(m => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left px-4 py-3 mb-1 rounded-lg hover:bg-gray-100 font-medium transition";
+                    btn.textContent = m.title;
+                    btn.onclick = () => selectMaterial(m.id);
+                    // Highlight if selected
+                    if(m.id === currentEditingMaterialId) btn.classList.add('bg-blue-50', 'text-blue-700');
+                    list.appendChild(btn);
+                });
+                
+                // Refresh title if editing
+                if(currentEditingMaterialId) {
+                    const m = materialsCache.get(currentEditingMaterialId);
+                    if(m) document.getElementById('material-title').textContent = m.title;
                 }
-            }, (error) => console.error("Error listening to users:", error));
+            }, err => console.warn("Materials permission:", err.code));
 
-
-            // 3. Listener untuk Materi
-            // Kita ambil semua materi, lalu urutkan di client
-            const materialsQuery = query(collection(db, materialsColPath));
-            onSnapshot(materialsQuery, (querySnapshot) => {
-                console.log("Received materials snapshot.");
-                const materials = [];
-                querySnapshot.forEach((doc) => {
-                    materials.push({ id: doc.id, ...doc.data() });
-                });
-                onMaterialsUpdate(materials);
-            }, (error) => console.error("Error listening to materials:", error));
-
-            // 4. Listener untuk Nilai (Submissions)
-            // Dosen: ambil semua nilai. Mahasiswa: ambil nilainya sendiri.
-            let submissionsQuery;
-            if (role === 'dosen') {
-                submissionsQuery = query(collection(db, submissionsColPath));
-            } else {
-                submissionsQuery = query(collection(db, submissionsColPath), where("userId", "==", uid));
-            }
-
-            onSnapshot(submissionsQuery, (querySnapshot) => {
-                console.log("Received submissions snapshot.");
+            // Submissions
+            let qSub = role==='dosen' ? query(collection(db, "submissions")) : query(collection(db, "submissions"), where("userId", "==", uid));
+            onSnapshot(qSub, (snap) => {
                 submissionsCache.clear();
-                querySnapshot.forEach((doc) => {
-                    submissionsCache.set(doc.id, doc.data());
-                });
-                console.log("Submissions cache updated:", submissionsCache);
-
-                // Jika ada materi yang sedang dipilih, render ulang
-                const activeTab = document.querySelector('.tab-button[data-selected="true"]')?.dataset.tab || 'worksheet';
-
-                if (activeTab === 'worksheet' && currentEditingMaterialId) {
-                    renderWorksheet(currentEditingMaterialId);
-                } else if (activeTab === 'recap' && currentEditingMaterialId) {
-                    renderRecapTab(currentEditingMaterialId);
-                } else if (activeTab === 'student-recap') { // Selalu render jika ini aktif
-                    renderStudentRecapTab();
+                snap.forEach(d => submissionsCache.set(d.id, d.data()));
+                // Refresh views if needed
+                if(currentEditingMaterialId) {
+                    const activeTab = document.querySelector('.tab-button.border-blue-500')?.dataset.tab;
+                    if(activeTab === 'worksheet') renderWorksheet(currentEditingMaterialId);
+                    else if(activeTab === 'recap') renderRecap(currentEditingMaterialId);
+                    else if(activeTab === 'student-recap') renderStudentRecap();
                 }
-            }, (error) => console.error("Error listening to submissions:", error));
+            }, err => console.warn("Subs permission:", err.code));
 
-            // 5. Cek data awal (khusus dosen)
-            if (role === 'dosen') {
-                setupInitialData();
-            }
-        }
-
-        /**
-         * Membuat 12 materi awal jika database kosong (hanya dipanggil oleh dosen).
-         */
-        async function setupInitialData() {
-            try {
-                // Cek apakah koleksi 'materials' sudah ada isinya
-                const q = query(collection(db, materialsColPath));
-                const querySnapshot = await getDocs(q);
-
-                if (querySnapshot.empty) {
-                    console.log("Database kosong, membuat 12 materi awal...");
-                    // Database kosong, buat 12 materi
-                    const initialMaterials = [
-                        { title: "Pertemuan 1: Introduction to Business English", order: 1 },
-                        { title: "Pertemuan 2: Telephoning", order: 2 },
-                        { title: "Pertemuan 3: Business Correspondence (Emails)", order: 3 },
-                        { title: "Pertemuan 4: Meetings and Discussions", order: 4 },
-                        { title: "Pertemuan 5: Presentations", order: 5 },
-                        { title: "Pertemuan 6: UTS (Mid-Term Exam)", order: 6 },
-                        { title: "Pertemuan 7: Negotiations", order: 7 },
-                        { title: "Pertemuan 8: Business Vocabulary (Finance)", order: 8 },
-                        { title: "Pertemuan 9: Business Vocabulary (Marketing)", order: 9 },
-                        { title: "Pertemuan 10: Socializing and Networking", order: 10 },
-                        { title: "Pertemuan 11: Writing Reports", order: 11 },
-                        { title: "Pertemuan 12: UAS (Final Exam)", order: 12 },
-                    ];
-
-                    for (const mat of initialMaterials) {
-                        // Kita gunakan addDoc agar ID dibuat otomatis
-                        await addDoc(collection(db, materialsColPath), mat);
-                    }
-                    showMessage("Berhasil membuat 12 materi awal.", "success");
-                } else {
-                    console.log("Database sudah berisi materi, tidak perlu setup awal.");
-                }
-            } catch (error) {
-                console.error("Error setting up initial data:", error);
-                showMessage("Gagal membuat materi awal.", "error");
-            }
-        }
-
-        /**
-         * Menangani update pada koleksi materi (dari onSnapshot).
-         * @param {Array} materials - Array objek materi dari Firestore.
-         */
-        function onMaterialsUpdate(materials) {
-            // 1. Urutkan materi berdasarkan field 'order' atau 'title'
-            materials.sort((a, b) => {
-                const orderA = a.order ?? a.title.split(' ')[1]?.replace(':', '') ?? 99;
-                const orderB = b.order ?? b.title.split(' ')[1]?.replace(':', '') ?? 99;
-                // Pastikan perbandingan numerik
-                return parseFloat(orderA) - parseFloat(orderB);
+            // Users (for recap names)
+            onSnapshot(query(collection(db, "users")), (snap) => {
+                usersCache.clear();
+                snap.forEach(d => usersCache.set(d.id, d.data()));
+                if(currentEditingMaterialId) renderRecap(currentEditingMaterialId);
             });
 
-            // 2. Simpan ke cache
-            materialsCache.clear();
-            materials.forEach(mat => materialsCache.set(mat.id, mat));
+            if(role === 'dosen') checkInitData();
+        }
 
-            // 3. Render ulang daftar di sidebar
-            renderMaterialList();
-
-            // 4. Jika ada materi yang sedang diedit, perbarui judulnya
-            if (currentEditingMaterialId && materialsCache.has(currentEditingMaterialId)) {
-                const updatedMaterial = materialsCache.get(currentEditingMaterialId);
-                materialTitle.textContent = updatedMaterial.title;
+        async function checkInitData() {
+            // Simple check to create dummy data
+            const snap = await getDocs(query(collection(db, "materials")));
+            if(snap.empty) {
+                const titles = ["Pertemuan 1: Intro", "Pertemuan 2: Telephoning", "Pertemuan 3: Emails", "Pertemuan 4: Meetings", "Pertemuan 5: Presentations", "Pertemuan 6: UTS", "Pertemuan 7: Negotiations", "Pertemuan 8: Vocab Finance", "Pertemuan 9: Vocab Marketing", "Pertemuan 10: Socializing", "Pertemuan 11: Reports", "Pertemuan 12: UAS"];
+                titles.forEach((t,i) => addDoc(collection(db, "materials"), {title: t, order: i+1}));
             }
         }
 
-        /**
-         * Merender daftar materi di sidebar.
-         */
-        function renderMaterialList() {
-            materialList.innerHTML = ''; // Kosongkan daftar
-            if (materialsCache.size === 0) {
-                materialList.innerHTML = '<p class="p-4 text-sm text-gray-500">Belum ada materi.</p>';
-                return;
-            }
-
-            materialsCache.forEach((material, id) => {
-                const button = document.createElement('button');
-                button.className = "w-full text-left px-4 py-3 mb-1 rounded-lg hover:bg-gray-100 data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-700 font-medium transition-colors duration-150";
-                button.textContent = material.title;
-                button.dataset.id = id;
-                button.dataset.selected = (id === currentEditingMaterialId);
-
-                // Tambahkan event listener untuk memilih materi
-                button.addEventListener('click', () => selectMaterial(id));
-
-                materialList.appendChild(button);
-            });
-        }
-
-        /**
-         * Menangani pemilihan materi dari sidebar.
-         * @param {string} materialId - ID dokumen materi yang dipilih.
-         */
-        function selectMaterial(materialId) {
-            console.log("Selecting material:", materialId);
-            currentEditingMaterialId = materialId;
-
-            // 1. Update UI Sidebar (tandai yang aktif)
-            document.querySelectorAll('#material-list button').forEach(btn => {
-                btn.dataset.selected = (btn.dataset.id === materialId);
-            });
-
-            // 2. Ambil data materi dari cache
-            const material = materialsCache.get(materialId);
-            if (!material) {
-                console.error("Materi tidak ditemukan di cache:", materialId);
-                return;
-            }
-
-            // 3. Update header konten utama
-            materialTitle.textContent = material.title;
-            materialTabs.classList.remove('hidden');
-
-            // 4. Tampilkan ikon edit judul (hanya dosen)
-            if (userRole === 'dosen') {
-                editTitleBtn.classList.remove('hidden');
-            }
-
-            // 5. Tampilkan tab pertama (Lembar Kerja)
+        // --- UI FUNCTIONS ---
+        function selectMaterial(id) {
+            currentEditingMaterialId = id;
+            const mat = materialsCache.get(id);
+            document.getElementById('material-title').textContent = mat.title;
+            document.getElementById('material-tabs').classList.remove('hidden');
+            if(userRole==='dosen') document.getElementById('edit-title-btn').classList.remove('hidden');
+            
+            // Highlight in sidebar
+            const btns = document.getElementById('material-list').children;
+            for(let b of btns) b.classList.remove('bg-blue-50', 'text-blue-700');
+            // Re-render list slightly overkill but safe, or just find btn
+            
             showTab('worksheet');
         }
 
-        /**
-         * Menampilkan konten tab yang dipilih (Lembar Kerja, Edit, Rekap).
-         * @param {'worksheet' | 'edit' | 'recap'} tabName - Nama tab yang akan ditampilkan.
-         */
-        function showTab(tabName) {
-            console.log("Showing tab:", tabName);
+        function showTab(tab) {
+            // Hide all
+            ['worksheet', 'edit', 'recap', 'student-recap'].forEach(t => {
+                const el = document.getElementById(t==='worksheet'?'worksheet-details':(t+'-content'));
+                if(el) el.classList.add('hidden');
+            });
+            // FIX: This now refers to the correct ID 'worksheet-content' in HTML
+            document.getElementById('worksheet-content').classList.remove('hidden');
+            document.getElementById('worksheet-loading').classList.add('hidden');
+            document.getElementById('worksheet-empty').classList.add('hidden');
 
-            // 1. Update style tombol tab
-            tabButtons.forEach(btn => {
-                btn.dataset.selected = (btn.dataset.tab === tabName);
-                if (btn.dataset.tab === tabName) {
-                    btn.classList.add('border-blue-500', 'text-blue-600');
-                    btn.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
-                } else {
-                    btn.classList.remove('border-blue-500', 'text-blue-600');
-                    btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
-                }
+            // Tab Styles
+            document.querySelectorAll('.tab-button').forEach(b => {
+                b.classList.remove('border-blue-500', 'text-blue-600');
+                if(b.dataset.tab === tab) b.classList.add('border-blue-500', 'text-blue-600');
             });
 
-            // 2. Sembunyikan semua konten tab
-            worksheetDetails.classList.add('hidden');
-            editContent.classList.add('hidden');
-            recapContent.classList.add('hidden');
-            studentRecapContent.classList.add('hidden'); // BARU
-            worksheetLoading.classList.add('hidden');
-            worksheetEmpty.classList.add('hidden');
-
-            // 3. Tampilkan konten tab yang relevan
-            if (tabName === 'worksheet') {
-                worksheetContent.classList.remove('hidden');
-                worksheetDetails.classList.remove('hidden'); // Tampilkan wrapper
-                renderWorksheet(currentEditingMaterialId); // Render konten
-            } else if (tabName === 'edit' && userRole === 'dosen') {
-                worksheetContent.classList.remove('hidden');
-                editContent.classList.remove('hidden');
-                renderEditTab(currentEditingMaterialId); // Render konten
-            } else if (tabName === 'recap' && userRole === 'dosen') {
-                worksheetContent.classList.remove('hidden');
-                recapContent.classList.remove('hidden');
-                renderRecapTab(currentEditingMaterialId); // Render konten
-            } else if (tabName === 'student-recap' && userRole === 'mahasiswa') { // BARU
-                worksheetContent.classList.remove('hidden');
-                studentRecapContent.classList.remove('hidden');
-                renderStudentRecapTab(); // Panggil fungsi baru
-            } else {
-                // Fallback jika mahasiswa mencoba akses tab dosen
-                worksheetContent.classList.remove('hidden');
-                worksheetDetails.classList.remove('hidden');
-                renderWorksheet(currentEditingMaterialId);
-            }
-
-            // Panggil createIcons untuk ikon yang mungkin baru muncul
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+            if(tab==='worksheet') renderWorksheet(currentEditingMaterialId);
+            else if(tab==='edit') renderEdit(currentEditingMaterialId);
+            else if(tab==='recap') renderRecap(currentEditingMaterialId);
+            else if(tab==='student-recap') renderStudentRecap();
+            
+            if(window.lucide) lucide.createIcons();
         }
 
-        /**
-         * Merender konten untuk tab "Lembar Kerja".
-         * @param {string} materialId - ID materi yang akan dirender.
-         */
-        function renderWorksheet(materialId) {
-            console.log("Rendering worksheet for:", materialId);
-            const material = materialsCache.get(materialId);
-            if (!material) return;
+        function renderWorksheet(id) {
+            const mat = materialsCache.get(id);
+            const sub = submissionsCache.get(`${id}_${currentUserId}`);
+            const el = document.getElementById('worksheet-details');
+            el.classList.remove('hidden');
+            
+            // Reset
+            document.getElementById('worksheet-form-container').innerHTML = '';
+            document.getElementById('worksheet-form-container').classList.add('hidden');
+            document.getElementById('worksheet-score-card').classList.add('hidden');
+            document.getElementById('submit-worksheet-btn').classList.add('hidden');
+            document.getElementById('task-submission-container').classList.add('hidden');
 
-            // Reset UI Lembar Kerja
-            // FIX: Pisahkan reset `worksheetReadingContent` dari `worksheetFormContainer`
-            worksheetFormContainer.innerHTML = '';
-            worksheetFormContainer.classList.add('hidden');
-            worksheetReadingContent.innerHTML = '';
-            worksheetReadingContent.classList.add('hidden'); // Sembunyikan default
-            ebookLinkContainer.classList.add('hidden');
-            scoreCard.classList.add('hidden'); // Sembunyikan score card
-            submitWorksheetBtn.classList.add('hidden');
+            // eBook & Reading
+            const ebookDiv = document.getElementById('ebook-link-container');
+            if(mat.ebookUrl) { ebookDiv.classList.remove('hidden'); document.getElementById('ebook-link').href = mat.ebookUrl; }
+            else ebookDiv.classList.add('hidden');
 
-            worksheetLoading.classList.remove('hidden');
-            worksheetEmpty.classList.add('hidden');
+            const readDiv = document.getElementById('worksheet-reading-content');
+            if(mat.readingContentHTML) { readDiv.innerHTML = mat.readingContentHTML; readDiv.classList.remove('hidden'); }
+            else readDiv.classList.add('hidden');
 
-            // --- 1. Render Link eBook ---
-            if (material.ebookUrl) {
-                ebookLink.href = material.ebookUrl;
-                ebookLinkContainer.classList.remove('hidden');
-            }
+            // Check content existence
+            let quiz = null;
+            try { quiz = JSON.parse(mat.quizJsonString); } catch(e){}
+            const hasQuiz = quiz && quiz.questions && quiz.questions.length > 0;
+            const hasTask = mat.enableTaskSubmission;
 
-            // --- 2. Render Materi Bacaan ---
-            let hasReadingContent = false;
-            // Cek format baru (HTML)
-            if (material.readingContentHTML) {
-                worksheetReadingContent.innerHTML = material.readingContentHTML;
-                worksheetReadingContent.classList.remove('hidden');
-                hasReadingContent = true;
-            }
-            // Cek format lama (JSON) - fallback
-            else if (material.worksheet && material.worksheet.sections) {
-                renderReadingJSON(material.worksheet, worksheetReadingContent);
-                worksheetReadingContent.classList.remove('hidden');
-                hasReadingContent = true;
-            } else if (material.worksheet && material.worksheet.module_description) {
-                // Fallback lebih jauh untuk format JSON awal
-                worksheetReadingContent.innerHTML = `<p>${material.worksheet.module_description}</p>`;
-                worksheetReadingContent.classList.remove('hidden');
-                hasReadingContent = true;
-            }
-
-            // --- 3. Render Kuis ---
-            // Cek format baru (quizJsonString)
-            let quizData = null;
-            if (material.quizJsonString) {
-                try {
-                    quizData = JSON.parse(material.quizJsonString);
-                } catch (e) {
-                    console.error("Error parsing quizJsonString:", e);
-                }
-            }
-            // Cek format lama (worksheet) - fallback
-            else if (material.worksheet) {
-                quizData = material.worksheet;
-            }
-
-            const questions = quizData ? quizData.questions : null;
-
-            if (!questions || questions.length === 0) {
-                // Jika tidak ada kuis
-                worksheetLoading.classList.add('hidden');
-                if (!hasReadingContent) {
-                    // Jika tidak ada materi bacaan DAN tidak ada kuis
-                    worksheetEmpty.classList.remove('hidden');
-                    worksheetEmpty.querySelector('p').textContent = 'Belum ada materi atau kuis untuk pertemuan ini.';
-                }
-                return; // Berhenti
-            }
-
-            // --- 4. Cek Nilai (Submissions) ---
-            const submissionId = getSubmissionId(materialId);
-            const userSubmission = submissionsCache.get(submissionId);
-
-            // --- 5. Tampilkan Skor (Jika sudah mengerjakan) ---
-            if (userSubmission && userRole === 'mahasiswa') {
-                worksheetLoading.classList.add('hidden');
-                worksheetEmpty.classList.add('hidden');
-
-                // Tampilkan materi bacaan (jika ada) - sudah di-handle di atas
-                // Tampilkan Score Card
-                scoreCardText.textContent = userSubmission.score;
-                scoreCard.classList.remove('hidden');
-
-                // Pastikan form & submit button tersembunyi
-                worksheetFormContainer.classList.add('hidden');
-                submitWorksheetBtn.classList.add('hidden');
-                console.log("Mahasiswa sudah mengerjakan, tampilkan skor:", userSubmission.score);
-                return; // Selesai, jangan render form
-            }
-
-            // --- 6. Tampilkan Form Kuis (Jika belum mengerjakan / Dosen) ---
-            console.log("Merender form kuis...");
-            worksheetLoading.classList.add('hidden');
-            worksheetFormContainer.classList.remove('hidden'); // Tampilkan kontainer kuis
-            submitWorksheetBtn.classList.remove('hidden'); // Tampilkan tombol submit
-
-            questions.forEach((q, index) => {
-                // Deteksi format (baru vs lama)
-                const type = q.question_type || q.type;
-                const text = q.question_text || q.question;
-                const options = q.options;
-
-                if (!text) return; // Skip pertanyaan jika tidak ada teks
-
-                const questionWrapper = document.createElement('div');
-                questionWrapper.className = 'p-5 bg-white border border-gray-200 rounded-lg mb-4 shadow-sm';
-                questionWrapper.dataset.index = index; // Simpan index asli
-
-                let content = `<label class="block text-lg font-semibold text-gray-800 mb-4">${index + 1}. ${text}</label>`;
-
-                if (type === 'multiple_choice' && options) {
-                    content += '<div class="space-y-3">';
-                    options.forEach((opt, optIndex) => {
-                        content += `
-                            <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                <input type="radio" name="question_${index}" value="${optIndex}" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                <span class="ml-3 text-gray-700">${opt}</span>
-                            </label>
-                        `;
-                    });
-                    content += '</div>';
-                } else if (type === 'true_false') {
-                    content += `
-                        <div class="space-y-3">
-                            <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                <input type="radio" name="question_${index}" value="true" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                <span class="ml-3 text-gray-700">True</span>
-                            </label>
-                            <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                <input type="radio" name="question_${index}" value="false" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                <span class="ml-3 text-gray-700">False</span>
-                            </label>
-                        </div>
-                    `;
-                } else if (type === 'fill_in_the_blank') {
-                    content += `
-                        <input type="text" name="question_${index}" 
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
-                               placeholder="Tulis jawaban Anda...">
-                    `;
-                }
-
-                questionWrapper.innerHTML = content;
-                worksheetFormContainer.appendChild(questionWrapper);
-            });
-
-            // Sembunyikan tombol submit jika dosen
-            if (userRole === 'dosen') {
-                submitWorksheetBtn.classList.add('hidden');
-            }
-        }
-
-        /**
-         * Merender materi bacaan dari format JSON lama (fallback).
-         */
-        function renderReadingJSON(worksheetData, container) {
-            let html = '';
-            if (worksheetData.module_description) {
-                html += `<p class="text-lg italic text-gray-600 mb-6">${worksheetData.module_description}</p>`;
-            }
-
-            if (worksheetData.sections) {
-                worksheetData.sections.forEach(section => {
-                    html += `<h3 class="text-2xl font-bold mt-6 mb-3">${section.section_title}</h3>`;
-                    section.section_content.forEach(content => {
-                        if (content.type === 'text') {
-                            html += `<p>${content.data}</p>`;
-                        } else if (content.type === 'list') {
-                            html += `<h4 class="font-semibold mt-2">${content.data.title}</h4>`;
-                            html += '<ul>';
-                            content.data.items.forEach(item => {
-                                html += `<li>${item}</li>`;
-                            });
-                            html += '</ul>';
-                        } else if (content.type === 'table') {
-                            html += '<div class="overflow-x-auto my-4">';
-                            html += '<table class="min-w-full">';
-                            html += '<thead><tr>';
-                            content.data.headers.forEach(header => {
-                                html += `<th class="text-left p-2 bg-gray-100">${header}</th>`;
-                            });
-                            html += '</tr></thead>';
-                            html += '<tbody>';
-                            content.data.rows.forEach(row => {
-                                html += '<tr>';
-                                row.forEach(cell => {
-                                    html += `<td class="text-left p-2 border-t">${cell}</td>`;
-                                });
-                                html += '</tr>';
-                            });
-                            html += '</tbody></table></div>';
-                        }
-                    });
-                });
-            }
-            container.innerHTML = html;
-        }
-
-
-        /**
-         * Merender konten untuk tab "Edit Worksheet" (Dosen).
-         * @param {string} materialId - ID materi yang akan diedit.
-         */
-        function renderEditTab(materialId) {
-            console.log("Rendering edit tab for:", materialId);
-            const material = materialsCache.get(materialId);
-            if (!material) return;
-
-            // 1. Set Link eBook
-            ebookUrlInput.value = material.ebookUrl || '';
-
-            // 2. Set Materi Bacaan (Rich Text)
-            // Inisialisasi TinyMCE
-            if (window.tinymce) {
-                tinymce.remove('#reading-content-editor'); // Hapus instance lama
-                tinymce.init({
-                    selector: '#reading-content-editor',
-                    height: 500,
-                    menubar: false,
-                    plugins: 'lists link image table code help wordcount',
-                    toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link | table | code',
-                    setup: (editor) => {
-                        editor.on('init', () => {
-                            // Set konten SETELAH editor siap
-                            const content = material.readingContentHTML || '';
-                            editor.setContent(content);
-                            console.log("TinyMCE initialized and content set.");
-                        });
-                    }
-                }).catch(err => console.error("TinyMCE Init Error:", err));
-            } else {
-                console.warn("TinyMCE script not loaded yet.");
-                // Fallback jika TinyMCE gagal load
-                readingContentEditor.value = material.readingContentHTML || '';
-            }
-
-
-            // 3. Set Kuis (JSON)
-            // Cek format baru (quizJsonString)
-            if (material.quizJsonString) {
-                worksheetJsonInput.value = material.quizJsonString;
-            }
-            // Cek format lama (worksheet) - fallback
-            else if (material.worksheet && material.worksheet.questions) {
-                // Jika hanya ada format lama, konversi ke string JSON
-                worksheetJsonInput.value = JSON.stringify({ questions: material.worksheet.questions }, null, 2);
-            }
-            // Kosongkan jika tidak ada
-            else {
-                worksheetJsonInput.value = '{\n  "questions": []\n}';
-            }
-        }
-
-        /**
-         * Merender konten untuk tab "Rekap Nilai" (Dosen).
-         * @param {string} materialId - ID materi yang rekapnya akan ditampilkan.
-         */
-        function renderRecapTab(materialId) {
-            console.log("Rendering recap tab for:", materialId);
-            const material = materialsCache.get(materialId);
-            if (!material) return;
-
-            recapMaterialTitle.textContent = material.title;
-            recapTableBody.innerHTML = ''; // Kosongkan tabel
-
-            // Tampilkan loading, sembunyikan sisanya
-            recapLoading.classList.remove('hidden');
-            recapTable.classList.add('hidden');
-            recapNoData.classList.add('hidden');
-
-            // 1. Filter nilai dari cache
-            const relevantSubmissions = [];
-            submissionsCache.forEach((sub, id) => {
-                // ID nilai harus mengandung ID materi
-                if (sub.materialId === materialId) {
-                    relevantSubmissions.push(sub);
-                }
-            });
-
-            // 2. Cek jika ada data
-            if (relevantSubmissions.length === 0) {
-                recapLoading.classList.add('hidden');
-                recapNoData.classList.remove('hidden');
+            if(!hasQuiz && !hasTask && !mat.ebookUrl && !mat.readingContentHTML) {
+                el.classList.add('hidden');
+                document.getElementById('worksheet-empty').classList.remove('hidden');
+                document.querySelector('#worksheet-empty p').textContent = "Belum ada konten.";
                 return;
             }
 
-            // 3. Render data ke tabel
-            relevantSubmissions.forEach(sub => {
-                // Ambil data nama mahasiswa dari cache
-                const user = usersCache.get(sub.userId);
-                const displayName = user ? user.displayName : 'Nama Tidak Ditemukan';
-                const email = user ? user.email : 'email@tidak.ada';
-                const timestamp = sub.submittedAt ? new Date(sub.submittedAt.seconds * 1000).toLocaleString('id-ID') : 'Kapan-kapan';
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${displayName}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${email}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-600">${sub.score}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
-                `;
-                recapTableBody.appendChild(row);
-            });
-
-            // 4. Tampilkan tabel
-            recapLoading.classList.add('hidden');
-            recapTable.classList.remove('hidden');
-        }
-
-        /**
-         * Merender konten untuk tab "Rekap Nilai Saya" (Mahasiswa). (BARU)
-         */
-        function renderStudentRecapTab() {
-            console.log("Rendering student recap tab for:", currentUserId);
-            studentRecapTableBody.innerHTML = '';
-
-            studentRecapLoading.classList.remove('hidden');
-            studentRecapTable.classList.add('hidden');
-            studentRecapNoData.classList.add('hidden');
-
-            // Ambil semua submission dari cache (sudah terfilter by user)
-            const mySubmissions = Array.from(submissionsCache.values());
-
-            if (mySubmissions.length === 0) {
-                studentRecapLoading.classList.add('hidden');
-                studentRecapNoData.classList.remove('hidden');
-                return;
-            }
-
-            // Urutkan berdasarkan 'order' materi
-            mySubmissions.sort((a, b) => {
-                const matA = materialsCache.get(a.materialId);
-                const matB = materialsCache.get(b.materialId);
-                const orderA = matA?.order ?? 99;
-                const orderB = matB?.order ?? 99;
-                return orderA - orderB;
-            });
-
-            mySubmissions.forEach(sub => {
-                const material = materialsCache.get(sub.materialId);
-                const title = material ? material.title : 'Materi Dihapus';
-                const timestamp = sub.submittedAt ? new Date(sub.submittedAt.seconds * 1000).toLocaleString('id-ID') : 'N/A';
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${title}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-600">${sub.score}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
-                `;
-                studentRecapTableBody.appendChild(row);
-            });
-
-            studentRecapLoading.classList.add('hidden');
-            studentRecapTable.classList.remove('hidden');
-        }
-
-        /**
-         * Menghasilkan ID unik untuk dokumen submission.
-         * Format: <materialId>_<userId>
-         * @param {string} materialId - ID materi.
-         * @returns {string} - ID unik untuk submission.
-         */
-        function getSubmissionId(materialId) {
-            return `${materialId}_${currentUserId}`;
-        }
-
-        /**
-         * Menghitung nilai akhir kuis.
-         * @param {Array} questions - Array soal dari JSON.
-         * @param {Object} answers - Objek jawaban dari form.
-         * @returns {number} - Skor akhir (0-100).
-         */
-        function calculateGrade(questions, answers) {
-            let correctAnswers = 0;
-            let totalQuestions = questions.length;
-
-            questions.forEach((q, index) => {
-                const userAnswer = answers[`question_${index}`];
+            // If Submitted (Student)
+            if(sub && userRole==='mahasiswa') {
+                const card = document.getElementById('worksheet-score-card');
+                card.classList.remove('hidden');
+                document.getElementById('score-card-text').parentElement.style.display = hasQuiz ? 'block' : 'none';
+                document.getElementById('score-card-text').textContent = sub.score || 0;
                 
-                // Jika user tidak menjawab, anggap salah (jangan return, lanjut ke soal berikutnya)
-                if (userAnswer === undefined || userAnswer === null) {
-                    return; 
-                }
+                const taskMsg = document.getElementById('task-submitted-msg');
+                if(sub.taskUrl) { taskMsg.innerHTML = `<a href="${sub.taskUrl}" target="_blank" class="underline">Lihat Tugas</a>`; taskMsg.classList.remove('hidden'); }
+                else taskMsg.classList.add('hidden');
+                return;
+            }
 
-                // Deteksi format (baru vs lama)
-                const type = q.question_type || q.type;
-                let correctAnswer;
-
-                // --- Logika penentuan jawaban benar ---
-                if (type === 'multiple_choice') {
-                    // Format baru: correct_answer adalah index (angka)
-                    if (q.correct_answer !== undefined) {
-                        correctAnswer = q.correct_answer.toString(); // "1"
-                    }
-                    // Format lama: answer adalah teks
-                    else if (q.answer) {
-                        // Cari index opsi yang teksnya sama dengan jawaban
-                        const correctIndex = q.options.findIndex(opt => opt === q.answer);
-                        if (correctIndex !== -1) {
-                             correctAnswer = correctIndex.toString();
-                        } else {
-                             // Fallback: jika format lama tidak pakai index, pakai teks langsung
-                             correctAnswer = q.answer;
-                        }
-                    }
-                }
-                else if (type === 'true_false') {
-                    // Format baru: correct_answer adalah boolean
-                    if (q.correct_answer !== undefined) {
-                        correctAnswer = q.correct_answer.toString(); // "true" atau "false"
-                    }
-                }
-                else if (type === 'fill_in_the_blank') {
-                    // Cek format baru (correct_answer) ATAU format lama (answer)
-                    // FIX: Menambahkan fallback ke q.correct_answer
-                    correctAnswer = q.correct_answer || q.answer;
-                }
-                // --- Selesai logika ---
-
-
-                // Cek jawaban
-                if (type === 'fill_in_the_blank') {
-                    // FIX: Pastikan variabel tidak undefined sebelum di-trim
-                    const userStr = String(userAnswer || "").trim().toLowerCase();
-                    const correctStr = String(correctAnswer || "").trim().toLowerCase();
+            // Quiz Form
+            if(hasQuiz) {
+                const form = document.getElementById('worksheet-form-container');
+                form.classList.remove('hidden');
+                quiz.questions.forEach((q, idx) => {
+                    const div = document.createElement('div');
+                    div.className = "p-4 border rounded mb-4 bg-white";
+                    let h = `<label class="block font-semibold mb-2">${idx+1}. ${q.question || q.question_text}</label>`;
+                    const type = q.type || q.question_type;
                     
-                    if (userStr === correctStr && correctStr !== "") {
-                        correctAnswers++;
+                    if(type==='multiple_choice') {
+                        q.options.forEach((o, i) => {
+                            const val = o.id || i;
+                            const txt = o.text || o;
+                            // FIX: use name="q${idx}" consistently
+                            h += `<label class="block"><input type="radio" name="q${idx}" value="${val}"> ${txt}</label>`;
+                        });
+                    } else if (type==='true_false') {
+                        h += `<label class="block"><input type="radio" name="q${idx}" value="true"> True</label>`;
+                        h += `<label class="block"><input type="radio" name="q${idx}" value="false"> False</label>`;
+                    } else {
+                        h += `<input type="text" name="q${idx}" class="border w-full p-2 rounded">`;
                     }
-                } else {
-                    // Untuk multiple_choice dan true_false
-                    // Bandingkan string (misal "1" == "1" atau "true" == "true")
-                    if (String(userAnswer) === String(correctAnswer)) {
-                        correctAnswers++;
-                    }
-                }
-            });
-
-            if (totalQuestions === 0) return 100; // Jika tidak ada kuis, anggap 100
-            return Math.round((correctAnswers / totalQuestions) * 100);
-        }
-
-        // ===============================================
-        // FUNGSI PENANGAN EVENT (Tombol, Form, dll)
-        // ===============================================
-
-        /**
-         * Menangani penyimpanan worksheet (Dosen).
-         */
-        async function handleSaveWorksheet() {
-            if (userRole !== 'dosen' || !currentEditingMaterialId) return;
-
-            console.log("Saving worksheet for:", currentEditingMaterialId);
-            saveWorksheetBtn.disabled = true;
-            saveWorksheetBtn.textContent = 'Menyimpan...';
-
-            try {
-                // 1. Ambil Link eBook
-                const ebookUrl = ebookUrlInput.value.trim();
-
-                // 2. Ambil Materi Bacaan (HTML) dari TinyMCE
-                const readingContentHTML = tinymce.get('reading-content-editor').getContent();
-
-                // 3. Ambil Kuis (JSON) dan validasi
-                const quizJsonString = worksheetJsonInput.value;
-                let parsedQuizData;
-                try {
-                    parsedQuizData = JSON.parse(quizJsonString);
-                    if (!parsedQuizData.questions || !Array.isArray(parsedQuizData.questions)) {
-                        throw new Error("Format JSON tidak valid. Harus memiliki array 'questions'.");
-                    }
-                } catch (e) {
-                    showMessage(e.message, "error");
-                    return; // Berhenti jika JSON tidak valid
-                }
-
-                // 4. Siapkan data untuk disimpan
-                const docRef = doc(db, materialsColPath, currentEditingMaterialId);
-                const dataToSave = {
-                    ebookUrl: ebookUrl || '', // Simpan string kosong jika tidak ada
-                    readingContentHTML: readingContentHTML || '',
-                    quizJsonString: quizJsonString,
-                    // Hapus field 'worksheet' yang lama jika ada (opsional, tapi bersih)
-                    // worksheet: deleteField() // Perlu impor deleteField
-                };
-
-                // 5. Simpan ke Firestore
-                // Kita gunakan 'update' bukan 'set' agar tidak menghapus field 'title'
-                await updateDoc(docRef, dataToSave);
-
-                showMessage("Materi berhasil disimpan!", "success");
-
-            } catch (error) {
-                console.error("Error saving worksheet:", error);
-                // Cek error spesifik (misal: nested arrays)
-                if (error.code === 'invalid-argument') {
-                    showMessage("Error: Data tidak valid. Pastikan JSON tidak mengandung nested array.", "error");
-                } else {
-                    showMessage("Gagal menyimpan materi.", "error");
-                }
-            } finally {
-                saveWorksheetBtn.disabled = false;
-                saveWorksheetBtn.textContent = 'Simpan Perubahan';
+                    div.innerHTML = h;
+                    form.appendChild(div);
+                });
             }
+
+            if(hasTask) document.getElementById('task-submission-container').classList.remove('hidden');
+            if(userRole==='mahasiswa' && (hasQuiz || hasTask)) document.getElementById('submit-worksheet-btn').classList.remove('hidden');
         }
 
-        /**
-         * Menangani pengumpulan jawaban kuis (Mahasiswa).
-         */
-        async function handleSubmitWorksheet() {
-            if (userRole !== 'mahasiswa' || !currentEditingMaterialId) return;
+        // --- HANDLERS ---
+        async function handleSubmit() {
+            const mat = materialsCache.get(currentEditingMaterialId);
+            let quiz = null;
+            try { quiz = JSON.parse(mat.quizJsonString); } catch(e){}
+            
+            const answers = {};
+            let score = 0;
+            
+            if(quiz && quiz.questions) {
+                let correct = 0;
+                quiz.questions.forEach((q, idx) => {
+                    // Get answer
+                    let val = null;
+                    const type = q.type || q.question_type;
+                    if(type==='fill_in_the_blank') {
+                        const el = document.querySelector(`input[name="q${idx}"]`);
+                        if(el) val = el.value.trim().toLowerCase();
+                    } else {
+                        const el = document.querySelector(`input[name="q${idx}"]:checked`);
+                        if(el) val = el.value;
+                    }
+                    answers[`q${idx}`] = val;
 
-            console.log("Submitting worksheet for:", currentEditingMaterialId);
-
-            try {
-                // 1. Ambil data materi dari cache (untuk kuncinya)
-                const material = materialsCache.get(currentEditingMaterialId);
-                if (!material) throw new Error("Materi tidak ditemukan");
-
-                // Ambil data kuis (dari format baru atau lama)
-                let quizData = null;
-                if (material.quizJsonString) quizData = JSON.parse(material.quizJsonString);
-                else if (material.worksheet) quizData = material.worksheet;
-
-                if (!quizData || !quizData.questions) throw new Error("Data kuis tidak ditemukan");
-                const questions = quizData.questions;
-
-                // 2. Kumpulkan jawaban dari form
-                const answers = {};
-                const formElements = worksheetFormContainer.querySelectorAll('input, textarea');
-                formElements.forEach(el => {
-                    if (el.type === 'radio') {
-                        if (el.checked) {
-                            answers[el.name] = el.value;
-                        }
-                    } else if (el.type === 'text') {
-                        answers[el.name] = el.value;
+                    // Calculate Grade Logic
+                    if (val !== null && val !== undefined) {
+                        let key = q.correct_answer;
+                        if(key === undefined && q.answer) key = q.answer; // fallback
+                        
+                        // Normalize key
+                        if(typeof key === 'boolean') key = String(key);
+                        if(type === 'multiple_choice' && typeof key === 'number') key = String(key);
+                        
+                        // Simple compare
+                        if(String(val).toLowerCase() === String(key).toLowerCase()) correct++;
                     }
                 });
-
-                // 3. Hitung nilai
-                const finalGrade = calculateGrade(questions, answers);
-
-                // 4. Siapkan data untuk disimpan
-                const submissionId = getSubmissionId(currentEditingMaterialId);
-                const submissionData = {
-                    userId: currentUserId,
-                    materialId: currentEditingMaterialId,
-                    score: finalGrade,
-                    answers: answers, // Simpan jawaban mahasiswa
-                    submittedAt: new Date(), // Simpan timestamp
-                };
-
-                // 5. Simpan ke Firestore (gunakan set dengan merge)
-                const docRef = doc(db, submissionsColPath, submissionId);
-                await setDoc(docRef, submissionData, { merge: true });
-
-                // --- PERUBAHAN: Langsung tampilkan skor ---
-                worksheetFormContainer.classList.add('hidden');
-                submitWorksheetBtn.classList.add('hidden');
-
-                scoreCardText.textContent = finalGrade;
-                scoreCard.classList.remove('hidden');
-                // --- Akhir Perubahan ---
-
-                // Panggil createIcons untuk ikon centang
-                if (window.lucide) lucide.createIcons();
-
-                showMessage(`Jawaban berhasil disimpan! Skor Anda: ${finalGrade}`, "success");
-            } catch (error) {
-                console.error("Error submitting worksheet:", error);
-                showMessage("Gagal menyimpan jawaban: " + error.message, "error");
+                score = Math.round((correct / quiz.questions.length) * 100);
             }
+
+            const taskUrl = document.getElementById('task-url-input').value;
+            const data = { userId: currentUserId, materialId: currentEditingMaterialId, score, answers, submittedAt: new Date() };
+            if(mat.enableTaskSubmission && taskUrl) data.taskUrl = taskUrl;
+
+            await setDoc(doc(db, "submissions", `${currentEditingMaterialId}_${currentUserId}`), data, {merge:true});
+            showMessage("Tersimpan!", "success");
         }
 
-        /**
-         * Menangani penambahan materi baru (Dosen).
-         */
-        async function handleAddMaterial() {
-            if (userRole !== 'dosen') return;
-
-            const title = prompt("Masukkan judul materi baru (cth: Pertemuan 13: Review)");
-            if (title && title.trim() !== "") {
-                try {
-                    // Tentukan 'order' baru
-                    const newOrder = materialsCache.size + 1;
-                    await addDoc(collection(db, materialsColPath), {
-                        title: title.trim(),
-                        order: newOrder,
-                        readingContentHTML: "", // Buat field kosong
-                        quizJsonString: '{\n  "questions": []\n}' // Buat kuis kosong
-                    });
-                    showMessage("Materi baru berhasil ditambahkan!", "success");
-                } catch (error) {
-                    console.error("Error adding material:", error);
-                    showMessage("Gagal menambahkan materi.", "error");
-                }
-            }
-        }
-
-        /**
-         * Menangani pengeditan judul materi (Dosen).
-         */
-        async function handleEditTitle() {
-            if (userRole !== 'dosen' || !currentEditingMaterialId) return;
-
-            const material = materialsCache.get(currentEditingMaterialId);
-            const newTitle = prompt("Masukkan judul baru:", material.title);
-
-            if (newTitle && newTitle.trim() !== "" && newTitle.trim() !== material.title) {
-                try {
-                    const docRef = doc(db, materialsColPath, currentEditingMaterialId);
-                    await updateDoc(docRef, {
-                        title: newTitle.trim()
-                    });
-                    showMessage("Judul berhasil diperbarui!", "success");
-                    // Judul akan otomatis update via onSnapshot
-                } catch (error) {
-                    console.error("Error updating title:", error);
-                    showMessage("Gagal memperbarui judul.", "error");
-                }
-            }
-        }
-
-
-        // ===============================================
-        // INISIALISASI DAN EVENT LISTENER UTAMA
-        // ===============================================
-
-        // 1. Listener Status Autentikasi (Pintu Gerbang Utama)
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // --- Pengguna LOGIN ---
-                console.log("Auth state changed: User is LOGGED IN", user.uid);
-                currentUserId = user.uid;
-                currentUserEmail = user.email;
-                userRole = detectUserRole(user.email);
-
-                // Tampilkan dashboard
-                loginScreen.classList.add('hidden');
-                dashboardScreen.classList.remove('hidden');
-
-                // Update UI Sidebar
-                userEmailDisplay.textContent = currentUserEmail;
-                userEmailDisplay.title = currentUserEmail;
-
-                // Simpan/update data pengguna (untuk rekap nama)
-                saveUserData(currentUserId, currentUserEmail, userRole);
-
-                // Setup listener real-time
-                initAppSetup(currentUserId, userRole);
-
+        function renderEdit(id) {
+            const m = materialsCache.get(id);
+            document.getElementById('edit-content').classList.remove('hidden');
+            document.getElementById('ebook-url-input').value = m.ebookUrl || '';
+            document.getElementById('enable-task-submission').checked = !!m.enableTaskSubmission;
+            document.getElementById('worksheet-json-input').value = m.quizJsonString || '';
+            
+            if(window.tinymce && tinymce.get('reading-content-editor')) {
+                tinymce.get('reading-content-editor').setContent(m.readingContentHTML || '');
             } else {
-                // --- Pengguna LOGOUT ---
-                console.log("Auth state changed: User is LOGGED OUT");
-                resetUI();
+                document.getElementById('reading-content-editor').value = m.readingContentHTML || '';
             }
-        });
+        }
 
-        // 2. Listener untuk Elemen UI (Form, Tombol)
-        // Dipasang setelah DOM siap
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM content loaded. Attaching listeners...");
+        async function handleSave() {
+            const id = currentEditingMaterialId;
+            const data = {
+                ebookUrl: document.getElementById('ebook-url-input').value,
+                enableTaskSubmission: document.getElementById('enable-task-submission').checked,
+                quizJsonString: document.getElementById('worksheet-json-input').value,
+                readingContentHTML: tinymce.get('reading-content-editor')?.getContent() || ''
+            };
+            try { JSON.parse(data.quizJsonString || '{}'); } catch(e) { return showMessage("JSON Error", "error"); }
+            await updateDoc(doc(db, "materials", id), data);
+            showMessage("Disimpan.");
+        }
 
-            // (TAMBAHAN) Panggil generator animasi firefly
-            createFireflyAnimations();
+        async function handleEditTitle() {
+            const t = prompt("Judul Baru:");
+            if(t) await updateDoc(doc(db, "materials", currentEditingMaterialId), {title: t});
+        }
 
-            // Listener Form Login
-            loginForm.addEventListener('submit', handleLogin);
-            // Listener Tombol Logout
-            logoutButton.addEventListener('click', handleLogout);
+        function renderRecap(id) {
+            document.getElementById('recap-content').classList.remove('hidden');
+            const tbody = document.getElementById('recap-table-body');
+            tbody.innerHTML = '';
+            
+            const subs = [];
+            submissionsCache.forEach(s => { if(s.materialId === id) subs.push(s); });
+            
+            if(subs.length === 0) { document.getElementById('recap-no-data').classList.remove('hidden'); document.getElementById('recap-table').classList.add('hidden'); return; }
+            
+            document.getElementById('recap-no-data').classList.add('hidden');
+            document.getElementById('recap-table').classList.remove('hidden');
+            document.getElementById('recap-material-title').textContent = materialsCache.get(id).title;
 
-            // Listener Tombol Tambah Materi (Dosen)
-            document.getElementById('add-material-btn').addEventListener('click', handleAddMaterial);
-            // Listener Tombol Edit Judul (Ikon Pensil - Dosen)
-            editTitleBtn.addEventListener('click', handleEditTitle);
+            subs.forEach(s => {
+                const u = usersCache.get(s.userId) || {displayName: 'Unknown', email: 'Unknown'};
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class="px-6 py-4">${u.displayName}</td><td class="px-6 py-4">${u.email}</td><td class="px-6 py-4 font-bold text-blue-600">${s.score}</td><td class="px-6 py-4">${s.taskUrl ? `<a href="${s.taskUrl}" target="_blank" class="text-blue-600 underline">Link</a>` : '-'}</td><td class="px-6 py-4 text-gray-500">${s.submittedAt ? new Date(s.submittedAt.seconds*1000).toLocaleDateString() : '-'}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
 
-            // Listener Tombol Simpan Worksheet (Dosen)
-            saveWorksheetBtn.addEventListener('click', handleSaveWorksheet);
-            // Listener Tombol Submit Kuis (Mahasiswa)
-            submitWorksheetBtn.addEventListener('click', handleSubmitWorksheet);
-
-            // Listener Navigasi Tab
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    showTab(button.dataset.tab);
-                });
+        function renderStudentRecap() {
+            document.getElementById('student-recap-content').classList.remove('hidden');
+            const tbody = document.getElementById('student-recap-table-body');
+            tbody.innerHTML = '';
+            
+            const subs = Array.from(submissionsCache.values());
+            if(subs.length===0) { document.getElementById('student-recap-no-data').classList.remove('hidden'); document.getElementById('student-recap-table').classList.add('hidden'); return; }
+            
+            document.getElementById('student-recap-no-data').classList.add('hidden');
+            document.getElementById('student-recap-table').classList.remove('hidden');
+            
+            subs.sort((a,b) => {
+                const mA = materialsCache.get(a.materialId); const mB = materialsCache.get(b.materialId);
+                return (mA?.order||99) - (mB?.order||99);
             });
 
-            // Panggil createIcons setelah DOM siap dan skrip (semoga) sudah dimuat
-            try {
-                if (window.lucide) {
-                    lucide.createIcons();
-                    console.log("Lucide icons created on DOMContentLoaded.");
-                } else {
-                    console.warn("Lucide script not yet available on DOMContentLoaded.");
-                    // Coba lagi setelah delay singkat
-                    setTimeout(() => {
-                        if (window.lucide) {
-                            lucide.createIcons();
-                            console.log("Lucide icons created after delay.");
-                        } else {
-                            console.error("Gagal memuat ikon Lucide setelah delay.");
-                        }
-                    }, 500);
-                }
-            } catch (e) {
-                console.error("Gagal memuat ikon Lucide:", e);
-            }
+            subs.forEach(s => {
+                const m = materialsCache.get(s.materialId);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class="px-6 py-4">${m?m.title:'Deleted'}</td><td class="px-6 py-4 font-bold text-blue-600">${s.score}</td><td class="px-6 py-4 text-gray-500">${s.submittedAt ? new Date(s.submittedAt.seconds*1000).toLocaleDateString() : '-'}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            createFireflyAnimations();
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('logout-button').addEventListener('click', handleLogout);
+            document.getElementById('add-material-btn').addEventListener('click', async () => {
+                const t = prompt("Judul:"); if(t) await addDoc(collection(db,"materials"), {title:t, order: materialsCache.size+1});
+            });
+            document.getElementById('edit-title-btn').addEventListener('click', handleEditTitle);
+            document.getElementById('save-worksheet-btn').addEventListener('click', handleSave);
+            document.getElementById('submit-worksheet-btn').addEventListener('click', handleSubmit);
+            
+            document.querySelectorAll('.tab-button').forEach(b => {
+                b.addEventListener('click', () => showTab(b.dataset.tab));
+            });
         });
 
+        onAuthStateChanged(auth, async (user) => {
+            if(user) {
+                currentUserId = user.uid;
+                userRole = await saveUserData(user);
+                document.getElementById('user-email-display').textContent = user.email;
+                document.getElementById('user-role-display').querySelector('span').textContent = userRole;
+                
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard-screen').classList.remove('hidden');
+                
+                if(userRole === 'dosen') {
+                    document.getElementById('add-material-container').classList.remove('hidden');
+                    document.querySelectorAll('.tab-button-dosen').forEach(e=>e.classList.remove('hidden'));
+                    tinymce.init({ selector: '#reading-content-editor', height: 400, menubar: false, plugins: 'lists link image code', toolbar: 'undo redo | bold italic | bullist numlist | link | code' });
+                } else {
+                    document.querySelectorAll('.tab-button-mahasiswa').forEach(e=>e.classList.remove('hidden'));
+                }
+                
+                setupListeners(user.uid, userRole);
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('dashboard-screen').classList.add('hidden');
+            }
+        });
     </script>
 </body>
-
 </html>
