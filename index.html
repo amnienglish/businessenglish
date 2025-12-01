@@ -152,7 +152,7 @@
                         <label for="email" class="block text-sm font-medium text-gray-200 mb-1">Email</label>
                         <input type="email" id="email"
                             class="w-full px-4 py-2 bg-transparent border border-gray-400 rounded-lg text-white placeholder-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="cth: xxx@email.com" required>
+                            placeholder="cth: dosen123@gmail.com" required>
                     </div>
                     <div class="mb-6">
                         <label for="password" class="block text-sm font-medium text-gray-200 mb-1">Password</label>
@@ -1386,8 +1386,10 @@
 
             questions.forEach((q, index) => {
                 const userAnswer = answers[`question_${index}`];
+                
+                // Jika user tidak menjawab, anggap salah (jangan return, lanjut ke soal berikutnya)
                 if (userAnswer === undefined || userAnswer === null) {
-                    return; // Tidak dijawab
+                    return; 
                 }
 
                 // Deteksi format (baru vs lama)
@@ -1402,29 +1404,43 @@
                     }
                     // Format lama: answer adalah teks
                     else if (q.answer) {
+                        // Cari index opsi yang teksnya sama dengan jawaban
                         const correctIndex = q.options.findIndex(opt => opt === q.answer);
-                        correctAnswer = correctIndex.toString(); // "0"
+                        if (correctIndex !== -1) {
+                             correctAnswer = correctIndex.toString();
+                        } else {
+                             // Fallback: jika format lama tidak pakai index, pakai teks langsung
+                             correctAnswer = q.answer;
+                        }
                     }
                 }
                 else if (type === 'true_false') {
                     // Format baru: correct_answer adalah boolean
-                    correctAnswer = q.correct_answer.toString(); // "true" atau "false"
+                    if (q.correct_answer !== undefined) {
+                        correctAnswer = q.correct_answer.toString(); // "true" atau "false"
+                    }
                 }
                 else if (type === 'fill_in_the_blank') {
-                    // Format lama: answer adalah teks
-                    correctAnswer = q.answer;
+                    // Cek format baru (correct_answer) ATAU format lama (answer)
+                    // FIX: Menambahkan fallback ke q.correct_answer
+                    correctAnswer = q.correct_answer || q.answer;
                 }
                 // --- Selesai logika ---
 
 
                 // Cek jawaban
                 if (type === 'fill_in_the_blank') {
-                    if (userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase()) {
+                    // FIX: Pastikan variabel tidak undefined sebelum di-trim
+                    const userStr = String(userAnswer || "").trim().toLowerCase();
+                    const correctStr = String(correctAnswer || "").trim().toLowerCase();
+                    
+                    if (userStr === correctStr && correctStr !== "") {
                         correctAnswers++;
                     }
                 } else {
                     // Untuk multiple_choice dan true_false
-                    if (userAnswer === correctAnswer) {
+                    // Bandingkan string (misal "1" == "1" atau "true" == "true")
+                    if (String(userAnswer) === String(correctAnswer)) {
                         correctAnswers++;
                     }
                 }
